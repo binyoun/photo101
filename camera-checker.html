@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Suitability Checker | Photography 101 | RMIT Vietnam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #e60028;
+            color: white;
+            padding: 1.5rem 2rem;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .rmit-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 0.25rem;
+        }
+
+        .department {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .course-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .checker-card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .checker-card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        select:hover {
+            border-color: #999;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #e60028;
+        }
+
+        select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+            color: #999;
+        }
+
+        .check-btn {
+            background-color: #e60028;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .check-btn:hover {
+            background-color: #c40022;
+        }
+
+        .check-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .result.qualified {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+
+        .result.not-qualified {
+            background-color: #ffebee;
+            border-left: 4px solid #e60028;
+        }
+
+        .result h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .result.qualified h3 {
+            color: #2e7d32;
+        }
+
+        .result.not-qualified h3 {
+            color: #c40022;
+        }
+
+        .result p {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .specs-list {
+            margin-top: 1rem;
+            padding-left: 1.25rem;
+        }
+
+        .specs-list li {
+            margin-bottom: 0.35rem;
+            color: #555;
+        }
+
+        .requirements-card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .requirements-card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .requirements-list {
+            list-style: none;
+        }
+
+        .requirements-list li {
+            padding: 0.6rem 0;
+            padding-left: 1.75rem;
+            position: relative;
+            color: #444;
+        }
+
+        .requirements-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .requirements-list li.not-allowed::before {
+            content: "✕";
+            color: #e60028;
+        }
+
+        .note {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #fff8e1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        footer {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .contact-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-bottom: 0.75rem;
+        }
+
+        .contact-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-role {
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-email a {
+            color: #ff6b6b;
+            text-decoration: none;
+        }
+
+        .contact-email a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #333;
+            font-size: 0.85rem;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="rmit-logo">RMIT VIETNAM</div>
+            <div class="department">School of Communication & Design</div>
+        </div>
+    </header>
+
+    <main>
+        <h1 class="course-title">Photography 101</h1>
+        <p class="course-subtitle">Camera Suitability Checker</p>
+
+        <div class="checker-card">
+            <h2>Check Your Camera</h2>
+            
+            <div class="form-group">
+                <label for="brand">1. Select Camera Brand</label>
+                <select id="brand" onchange="updateModels()">
+                    <option value="">— Choose a brand —</option>
+                    <option value="canon">Canon</option>
+                    <option value="nikon">Nikon</option>
+                    <option value="sony">Sony</option>
+                    <option value="fujifilm">Fujifilm</option>
+                    <option value="panasonic">Panasonic</option>
+                    <option value="olympus">Olympus / OM System</option>
+                    <option value="leica">Leica</option>
+                    <option value="pentax">Pentax</option>
+                    <option value="mobile">Mobile Phone</option>
+                    <option value="film">Film Camera</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="model">2. Select Camera Model</label>
+                <select id="model" disabled onchange="checkEligibility()">
+                    <option value="">— Choose a model —</option>
+                </select>
+            </div>
+
+            <button class="check-btn" id="checkBtn" disabled onclick="showResult()">Check Suitability</button>
+
+            <div class="result" id="result">
+                <h3 id="resultTitle"></h3>
+                <p id="resultMessage"></p>
+                <ul class="specs-list" id="specsList"></ul>
+            </div>
+        </div>
+
+        <div class="requirements-card">
+            <h2>Camera Requirements for This Course</h2>
+            <ul class="requirements-list">
+                <li>Manual controls over Aperture, ISO, and Shutter Speed</li>
+                <li>Ability to shoot RAW images</li>
+                <li class="not-allowed">Mobile phones are not suitable for this course</li>
+                <li class="not-allowed">Film cameras are not suitable for this course</li>
+            </ul>
+            <div class="note">
+                <strong>Note:</strong> If your camera model is not listed, please contact the Course Coordinator to verify suitability.
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="contact-title">Course Coordinator</div>
+            <div class="contact-name">Bin Youn</div>
+            <div class="contact-role">Photography 101</div>
+            <div class="contact-email">
+                <a href="mailto:bin.youn@rmit.edu.vn">bin.youn@rmit.edu.vn</a>
+            </div>
+            <div class="footer-bottom">
+                RMIT University Vietnam — School of Communication & Design
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const cameras = {
+            canon: [
+                { model: "EOS R5", qualified: true, specs: ["Full Manual Controls", "RAW (CR3)", "45MP Full Frame"] },
+                { model: "EOS R6 / R6 II", qualified: true, specs: ["Full Manual Controls", "RAW (CR3)", "20MP/24MP Full Frame"] },
+                { model: "EOS R7", qualified: true, specs: ["Full Manual Controls", "RAW (CR3)", "32.5MP APS-C"] },
+                { model: "EOS R10", qualified: true, specs: ["Full Manual Controls", "RAW (CR3)", "24.2MP APS-C"] },
+                { model: "EOS R50", qualified: true, specs: ["Full Manual Controls", "RAW (CR3)", "24.2MP APS-C"] },
+                { model: "EOS R100", qualified: true, specs: ["Full Manual Controls", "RAW (CR3)", "24.1MP APS-C"] },
+                { model: "EOS RP", qualified: true, specs: ["Full Manual Controls", "RAW (CR3)", "26.2MP Full Frame"] },
+                { model: "EOS 90D", qualified: true, specs: ["Full Manual Controls", "RAW (CR2)", "32.5MP APS-C"] },
+                { model: "EOS 80D", qualified: true, specs: ["Full Manual Controls", "RAW (CR2)", "24.2MP APS-C"] },
+                { model: "EOS 77D", qualified: true, specs: ["Full Manual Controls", "RAW (CR2)", "24.2MP APS-C"] },
+                { model: "EOS 800D / Rebel T7i", qualified: true, specs: ["Full Manual Controls", "RAW (CR2)", "24.2MP APS-C"] },
+                { model: "EOS 750D / Rebel T6i", qualified: true, specs: ["Full Manual Controls", "RAW (CR2)", "24.2MP APS-C"] },
+                { model: "EOS 700D / Rebel T5i", qualified: true, specs: ["Full Manual Controls", "RAW (CR2)", "18MP APS-C"] },
+                { model: "EOS 250D / Rebel SL3", qualified: true, specs: ["Full Manual Controls", "RAW (CR3)", "24.1MP APS-C"] },
+                { model: "EOS 200D / Rebel SL2", qualified: true, specs: ["Full Manual Controls", "RAW (CR2)", "24.2MP APS-C"] },
+                { model: "EOS 5D Mark IV", qualified: true, specs: ["Full Manual Controls", "RAW (CR2)", "30.4MP Full Frame"] },
+                { model: "EOS 5D Mark III", qualified: true, specs: ["Full Manual Controls", "RAW (CR2)", "22.3MP Full Frame"] },
+                { model: "EOS 6D / 6D Mark II", qualified: true, specs: ["Full Manual Controls", "RAW (CR2)", "Full Frame"] },
+                { model: "EOS M50 / M50 II", qualified: true, specs: ["Full Manual Controls", "RAW (CR3)", "24.1MP APS-C"] },
+                { model: "EOS M6 II", qualified: true, specs: ["Full Manual Controls", "RAW (CR3)", "32.5MP APS-C"] },
+                { model: "PowerShot G7 X III", qualified: true, specs: ["Full Manual Controls", "RAW", "20.1MP 1-inch"] },
+                { model: "PowerShot G5 X II", qualified: true, specs: ["Full Manual Controls", "RAW", "20.1MP 1-inch"] },
+                { model: "Other Canon DSLR/Mirrorless", qualified: true, specs: ["Most Canon DSLRs and Mirrorless support Manual + RAW"] }
+            ],
+            nikon: [
+                { model: "Z9", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "45.7MP Full Frame"] },
+                { model: "Z8", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "45.7MP Full Frame"] },
+                { model: "Z7 / Z7 II", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "45.7MP Full Frame"] },
+                { model: "Z6 / Z6 II / Z6 III", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.5MP Full Frame"] },
+                { model: "Z5", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.3MP Full Frame"] },
+                { model: "Zf", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.5MP Full Frame"] },
+                { model: "Zfc", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "20.9MP APS-C"] },
+                { model: "Z50 / Z50 II", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "20.9MP APS-C"] },
+                { model: "Z30", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "20.9MP APS-C"] },
+                { model: "D850", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "45.7MP Full Frame"] },
+                { model: "D780", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.5MP Full Frame"] },
+                { model: "D750", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.3MP Full Frame"] },
+                { model: "D7500", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "20.9MP APS-C"] },
+                { model: "D7200", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.2MP APS-C"] },
+                { model: "D5600", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.2MP APS-C"] },
+                { model: "D5500", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.2MP APS-C"] },
+                { model: "D5300", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.2MP APS-C"] },
+                { model: "D3500", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.2MP APS-C"] },
+                { model: "D3400", qualified: true, specs: ["Full Manual Controls", "RAW (NEF)", "24.2MP APS-C"] },
+                { model: "Other Nikon DSLR/Mirrorless", qualified: true, specs: ["Most Nikon DSLRs and Mirrorless support Manual + RAW"] }
+            ],
+            sony: [
+                { model: "A1", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "50.1MP Full Frame"] },
+                { model: "A9 III", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "24.6MP Full Frame"] },
+                { model: "A7R V", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "61MP Full Frame"] },
+                { model: "A7 IV", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "33MP Full Frame"] },
+                { model: "A7 III", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "24.2MP Full Frame"] },
+                { model: "A7C / A7C II", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "Full Frame Compact"] },
+                { model: "A7CR", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "61MP Full Frame"] },
+                { model: "A6700", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "26MP APS-C"] },
+                { model: "A6600", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "24.2MP APS-C"] },
+                { model: "A6500", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "24.2MP APS-C"] },
+                { model: "A6400", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "24.2MP APS-C"] },
+                { model: "A6100", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "24.2MP APS-C"] },
+                { model: "ZV-E10 / ZV-E10 II", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "24.2MP/26MP APS-C"] },
+                { model: "ZV-E1", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "12.1MP Full Frame"] },
+                { model: "RX100 VII", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "20.1MP 1-inch"] },
+                { model: "RX100 VI", qualified: true, specs: ["Full Manual Controls", "RAW (ARW)", "20.1MP 1-inch"] },
+                { model: "Other Sony Alpha", qualified: true, specs: ["Most Sony Alpha cameras support Manual + RAW"] }
+            ],
+            fujifilm: [
+                { model: "X-H2 / X-H2S", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "40MP/26MP APS-C"] },
+                { model: "X-T5", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "40.2MP APS-C"] },
+                { model: "X-T4", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "26.1MP APS-C"] },
+                { model: "X-T3", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "26.1MP APS-C"] },
+                { model: "X-T30 / X-T30 II", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "26.1MP APS-C"] },
+                { model: "X-T20", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "24.3MP APS-C"] },
+                { model: "X-S20", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "26.1MP APS-C"] },
+                { model: "X-S10", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "26.1MP APS-C"] },
+                { model: "X-E4", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "26.1MP APS-C"] },
+                { model: "X-Pro3", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "26.1MP APS-C"] },
+                { model: "X100V / X100VI", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "26.1MP/40.2MP APS-C"] },
+                { model: "X-A7", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "24.2MP APS-C"] },
+                { model: "GFX 100S / 100 II", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "102MP Medium Format"] },
+                { model: "GFX 50S II", qualified: true, specs: ["Full Manual Controls", "RAW (RAF)", "51.4MP Medium Format"] },
+                { model: "Other Fujifilm X/GFX", qualified: true, specs: ["Most Fujifilm X/GFX cameras support Manual + RAW"] }
+            ],
+            panasonic: [
+                { model: "S5 / S5 II / S5 IIX", qualified: true, specs: ["Full Manual Controls", "RAW", "24.2MP Full Frame"] },
+                { model: "S1 / S1R / S1H", qualified: true, specs: ["Full Manual Controls", "RAW", "24.2MP/47.3MP Full Frame"] },
+                { model: "GH6 / GH7", qualified: true, specs: ["Full Manual Controls", "RAW", "25.2MP MFT"] },
+                { model: "GH5 / GH5S / GH5 II", qualified: true, specs: ["Full Manual Controls", "RAW", "20.3MP/10.2MP MFT"] },
+                { model: "G9 / G9 II", qualified: true, specs: ["Full Manual Controls", "RAW", "20.3MP/25.2MP MFT"] },
+                { model: "G95 / G90", qualified: true, specs: ["Full Manual Controls", "RAW", "20.3MP MFT"] },
+                { model: "G85 / G80", qualified: true, specs: ["Full Manual Controls", "RAW", "16MP MFT"] },
+                { model: "GX85 / GX80", qualified: true, specs: ["Full Manual Controls", "RAW", "16MP MFT"] },
+                { model: "LX100 II", qualified: true, specs: ["Full Manual Controls", "RAW", "17MP MFT"] },
+                { model: "Other Panasonic Lumix", qualified: true, specs: ["Most Lumix G/S cameras support Manual + RAW"] }
+            ],
+            olympus: [
+                { model: "OM-1 / OM-1 II", qualified: true, specs: ["Full Manual Controls", "RAW (ORF)", "20.4MP MFT"] },
+                { model: "OM-5", qualified: true, specs: ["Full Manual Controls", "RAW (ORF)", "20.4MP MFT"] },
+                { model: "E-M1 Mark III", qualified: true, specs: ["Full Manual Controls", "RAW (ORF)", "20.4MP MFT"] },
+                { model: "E-M1 Mark II", qualified: true, specs: ["Full Manual Controls", "RAW (ORF)", "20.4MP MFT"] },
+                { model: "E-M5 Mark III", qualified: true, specs: ["Full Manual Controls", "RAW (ORF)", "20.4MP MFT"] },
+                { model: "E-M10 Mark IV", qualified: true, specs: ["Full Manual Controls", "RAW (ORF)", "20.3MP MFT"] },
+                { model: "E-M10 Mark III", qualified: true, specs: ["Full Manual Controls", "RAW (ORF)", "16.1MP MFT"] },
+                { model: "PEN-F", qualified: true, specs: ["Full Manual Controls", "RAW (ORF)", "20.3MP MFT"] },
+                { model: "E-P7", qualified: true, specs: ["Full Manual Controls", "RAW (ORF)", "20.3MP MFT"] },
+                { model: "Other Olympus/OM System", qualified: true, specs: ["Most Olympus/OM cameras support Manual + RAW"] }
+            ],
+            leica: [
+                { model: "M11 / M11-P", qualified: true, specs: ["Full Manual Controls", "RAW (DNG)", "60MP Full Frame"] },
+                { model: "SL2 / SL2-S", qualified: true, specs: ["Full Manual Controls", "RAW (DNG)", "47.3MP/24.6MP Full Frame"] },
+                { model: "Q3 / Q2", qualified: true, specs: ["Full Manual Controls", "RAW (DNG)", "60MP/47.3MP Full Frame"] },
+                { model: "CL / TL2", qualified: true, specs: ["Full Manual Controls", "RAW (DNG)", "24.2MP APS-C"] },
+                { model: "V-Lux 5", qualified: true, specs: ["Full Manual Controls", "RAW", "20.1MP 1-inch"] },
+                { model: "Other Leica", qualified: true, specs: ["Most Leica cameras support Manual + RAW"] }
+            ],
+            pentax: [
+                { model: "K-3 III / K-3 III Monochrome", qualified: true, specs: ["Full Manual Controls", "RAW (DNG/PEF)", "25.7MP APS-C"] },
+                { model: "K-1 / K-1 II", qualified: true, specs: ["Full Manual Controls", "RAW (DNG/PEF)", "36.4MP Full Frame"] },
+                { model: "KF", qualified: true, specs: ["Full Manual Controls", "RAW (DNG/PEF)", "24.2MP APS-C"] },
+                { model: "K-70", qualified: true, specs: ["Full Manual Controls", "RAW (DNG/PEF)", "24.2MP APS-C"] },
+                { model: "645Z", qualified: true, specs: ["Full Manual Controls", "RAW (DNG/PEF)", "51.4MP Medium Format"] },
+                { model: "Other Pentax DSLR", qualified: true, specs: ["Most Pentax DSLRs support Manual + RAW"] }
+            ],
+            mobile: [
+                { model: "iPhone (any model)", qualified: false, specs: ["Limited manual controls", "ProRAW limited to Pro models", "Not suitable for course requirements"] },
+                { model: "Samsung Galaxy (any model)", qualified: false, specs: ["Limited manual controls via Pro mode", "RAW limited support", "Not suitable for course requirements"] },
+                { model: "Google Pixel (any model)", qualified: false, specs: ["Limited manual controls", "RAW limited support", "Not suitable for course requirements"] },
+                { model: "Other Smartphone", qualified: false, specs: ["Mobile cameras do not meet course requirements"] }
+            ],
+            film: [
+                { model: "35mm Film Camera", qualified: false, specs: ["Film cameras not accepted", "Digital workflow required for this course"] },
+                { model: "Medium Format Film", qualified: false, specs: ["Film cameras not accepted", "Digital workflow required for this course"] },
+                { model: "Large Format Film", qualified: false, specs: ["Film cameras not accepted", "Digital workflow required for this course"] },
+                { model: "Instant Film (Polaroid/Instax)", qualified: false, specs: ["Film cameras not accepted", "Digital workflow required for this course"] }
+            ],
+            other: [
+                { model: "My camera is not listed", qualified: null, specs: ["Please contact the Course Coordinator to verify your camera's suitability"] }
+            ]
+        };
+
+        let selectedCamera = null;
+
+        function updateModels() {
+            const brand = document.getElementById('brand').value;
+            const modelSelect = document.getElementById('model');
+            const checkBtn = document.getElementById('checkBtn');
+            const result = document.getElementById('result');
+
+            modelSelect.innerHTML = '<option value="">— Choose a model —</option>';
+            result.style.display = 'none';
+            selectedCamera = null;
+
+            if (brand && cameras[brand]) {
+                modelSelect.disabled = false;
+                cameras[brand].forEach((camera, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = camera.model;
+                    modelSelect.appendChild(option);
+                });
+            } else {
+                modelSelect.disabled = true;
+            }
+            checkBtn.disabled = true;
+        }
+
+        function checkEligibility() {
+            const brand = document.getElementById('brand').value;
+            const modelIndex = document.getElementById('model').value;
+            const checkBtn = document.getElementById('checkBtn');
+
+            if (brand && modelIndex !== '') {
+                selectedCamera = cameras[brand][modelIndex];
+                checkBtn.disabled = false;
+            } else {
+                selectedCamera = null;
+                checkBtn.disabled = true;
+            }
+        }
+
+        function showResult() {
+            if (!selectedCamera) return;
+
+            const result = document.getElementById('result');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+            const specsList = document.getElementById('specsList');
+
+            result.classList.remove('qualified', 'not-qualified');
+            specsList.innerHTML = '';
+
+            if (selectedCamera.qualified === true) {
+                result.classList.add('qualified');
+                resultTitle.textContent = '✓ Camera Approved';
+                resultMessage.textContent = 'This camera meets the requirements for Photography 101.';
+            } else if (selectedCamera.qualified === false) {
+                result.classList.add('not-qualified');
+                resultTitle.textContent = '✕ Camera Not Suitable';
+                resultMessage.textContent = 'This camera does not meet the course requirements. Please see the requirements below or contact the Course Coordinator.';
+            } else {
+                result.classList.add('not-qualified');
+                resultTitle.textContent = 'Verification Required';
+                resultMessage.textContent = 'Please contact the Course Coordinator to verify your camera\'s suitability.';
+            }
+
+            selectedCamera.specs.forEach(spec => {
+                const li = document.createElement('li');
+                li.textContent = spec;
+                specsList.appendChild(li);
+            });
+
+            result.style.display = 'block';
+            result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
