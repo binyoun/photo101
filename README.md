@@ -1,1 +1,1 @@
-# photo101
+# <img src="favicon.png" width="28" alt=""> photo101
