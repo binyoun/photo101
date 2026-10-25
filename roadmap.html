@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Photography 101 (VART3626 | VART3700), RMIT Vietnam, Semester 3 2026: 12-week roadmap, assessments and assignment templates.">
+<link rel="icon" type="image/png" href="/photo101/favicon.png">
+<title>Photography 101 Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one course, read top to bottom. Assessments first as a weight bar, then the semester as a strip of week frames. */
+:root {
+  --paper: #f3f5f4; --sheet: #ffffff; --ink: #1a1e20; --muted: #5b6569; --rule: #d6dcdc;
+  --accent: #17707f; --accent-soft: #dcefF1; --due: #c0352a; --due-soft: #f9e1de; --break: #e9ecea;
+  --f-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #121516; --sheet: #1a1f21; --ink: #e8ecec; --muted: #9aa5a8; --rule: #2e3639;
+  --accent: #5cc0cf; --accent-soft: #173a40; --due: #f0705f; --due-soft: #4a1f1a; --break: #20272a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #121516; --sheet: #1a1f21; --ink: #e8ecec; --muted: #9aa5a8; --rule: #2e3639;
+  --accent: #5cc0cf; --accent-soft: #173a40; --due: #f0705f; --due-soft: #4a1f1a; --break: #20272a; color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 36px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(40px, 8vw, 72px); line-height: .95; margin: 0; color: var(--accent); text-wrap: balance; }
+h2 { font-family: var(--f-display); font-weight: 600; font-size: 28px; margin: 0; letter-spacing: .02em; }
+.lede { font-size: 18px; max-width: 62ch; margin: 0; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.facts span { font-size: 14px; padding: 4px 10px; border-radius: 999px; background: var(--sheet); border: 1px solid var(--rule); }
+section { display: grid; gap: 16px; }
+
+/* weight bar */
+.bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; gap: 3px; }
+.bar i { display: block; background: var(--accent); }
+.bar i:nth-child(2) { opacity: .75; } .bar i:nth-child(3) { opacity: .5; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 18px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.card .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.card .code { font-family: var(--f-mono); font-size: 13px; color: var(--accent); font-weight: 600; }
+.card .pct { font-family: var(--f-display); font-size: 36px; font-weight: 700; line-height: 1; }
+.card h3 { font-size: 18px; margin: 0; line-height: 1.25; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+.card .when { font-family: var(--f-mono); font-size: 13px; color: var(--due); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* weeks */
+.weeks { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.wk { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.wk .hd { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; border-bottom: 1px solid var(--rule); padding-bottom: 6px; }
+.wk .no { font-family: var(--f-mono); font-weight: 600; font-size: 14px; color: var(--accent); }
+.wk .dt { font-family: var(--f-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.wk h3 { margin: 0; font-size: 17px; line-height: 1.25; }
+.wk ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14.5px; display: grid; gap: 2px; }
+.wk .duetag { margin-top: 4px; background: var(--due-soft); border: 1px solid var(--due); border-radius: 5px; padding: 6px 9px; font-size: 13.5px; }
+.wk .duetag b { color: var(--due); font-family: var(--f-mono); font-size: 12px; display: block; }
+.wk.brk { background: repeating-linear-gradient(135deg, var(--break) 0 6px, var(--sheet) 6px 12px); }
+.wk.brk h3 { color: var(--muted); }
+.wk.hl { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
+.phase { font-family: var(--f-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+.tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.tip { border-top: 3px solid var(--accent); padding-top: 10px; display: grid; gap: 4px; }
+.tip b { font-size: 16px; }
+.tip span { color: var(--muted); font-size: 15px; }
+.async { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 22px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 40px; }
+@media (max-width: 640px) { .async { grid-template-columns: 1fr; } }
+.async > div { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.async h3 { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 22px; color: var(--accent); }
+.async p { margin: 0; }
+.async a { color: var(--accent); font-weight: 600; }
+.async ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.tpl { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.tpl .card a { color: var(--accent); font-weight: 600; text-decoration: none; border-bottom: 1px solid currentColor; }
+.tpl .links { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.tplnote { margin: 0; color: var(--muted); font-size: 15px; }
+.rule50 { display: flex; align-items: center; gap: 12px; font-family: var(--f-mono); font-size: 13px; }
+.rule50 .track { flex: 1; height: 10px; border-radius: 5px; background: var(--accent-soft); position: relative; overflow: hidden; }
+.rule50 .track i { position: absolute; inset: 0 50% 0 0; background: var(--accent); }
+.wk .att { font-family: var(--f-mono); font-size: 11px; color: var(--accent); background: var(--accent-soft); border-radius: 4px; padding: 2px 6px; justify-self: start; }
+.foot { font-size: 13px; color: var(--muted); margin: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">VART3626 | VART3700 · Semester 3, 2026 · Your 12-week roadmap</div>
+    <h1>Photography 101</h1>
+    <p class="lede">Learn to control exposure, composition and light, edit in Lightroom, read photographs critically, and finish with a portfolio series of your own.</p>
+    <div class="facts"><span>Asynchronous: online, no live classes</span><span>About 10 hours of study a week</span><span>Camera: DSLR or mirrorless</span><span>Software: Adobe Lightroom</span></div>
+  </header>
+  <section class="async" aria-label="How this course runs">
+    <div>
+      <h3>An asynchronous course</h3>
+      <p>There are no scheduled classes. You work through the modules on Canvas at your own pace, whenever suits you each week. The assignment deadlines are fixed, so keep to the weekly plan below.</p>
+      <p>You still learn with others: share your photos in the discussions, reply to classmates, and book a consultation when you need help.</p>
+    </div>
+    <div>
+      <h3>Attendance = watching the lecture videos</h3>
+      <p>Your attendance is the share of lecture videos you watch in Modules 1 and 2 (Weeks 1 to 4) and Module 4 (Weeks 5 to 8).</p>
+      <div class="rule50"><span>0%</span><span class="track"><i></i></span><span>50% minimum</span></div>
+      <p>Watch less than half and you are marked as not attended.</p>
+    </div>
+    <div>
+      <h3>How to make sure it counts</h3>
+      <ol>
+        <li>Find the boxes on each module page that say <b>"Watch the video lecture"</b>, with the running time.</li>
+        <li>Play the video inside Canvas while you are logged in. Viewing is recorded automatically.</li>
+        <li>Watch to the end. Parts you skip are not counted.</li>
+        <li>Unsure about your record? Ask your lecturer to check it for you.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Online support sessions</h3>
+      <p>Assignment guidance and a showcase of HD work, online on Wednesdays:</p>
+      <ol>
+        <li><b>Wed Nov 4</b> for A1</li>
+        <li><b>Wed Nov 25</b> for A2</li>
+        <li><b>Wed Dec 30</b> for A3</li>
+      </ol>
+      <p><a href="https://au.miro.com/app/board/u3jVOf_GAsc=/?share_link_id=675895750787" target="_blank" rel="noopener">Open the support session Miro board</a></p>
+    </div>
+  </section>
+  <section>
+    <h2>How you are assessed</h2>
+    <div class="bar" role="img" aria-label="A1 15 percent, A2 45 percent, A3 40 percent"><i style="flex:15" title="A1 15%"></i><i style="flex:45" title="A2 45%"></i><i style="flex:40" title="A3 40%"></i></div>
+    <div class="cards"><div class="card"><div class="top"><span class="code">A1</span><span class="pct">15%</span></div><h3>Photographic Techniques</h3><p>4 images with technical captions: one long exposure, one frozen movement, and one scene at a large then a small aperture. Plus a 200-word reflection.</p><span class="when">Due Fri Nov 13, 18:00</span></div><div class="card"><div class="top"><span class="code">A2</span><span class="pct">45%</span></div><h3>Photographic Craft and Visual Analysis</h3><p>16 images (4 composition, 12 genre), 4 short reflections and one 400-word visual analysis.</p><span class="when">Due Fri Dec 4, 18:00</span></div><div class="card"><div class="top"><span class="code">A3</span><span class="pct">40%</span></div><h3>Final Folio</h3><p>20 to 30 connected images. Develop two themes, build a moodboard, and attend the required consultation with your lecturer.</p><span class="when">Due Fri Jan 15, 18:00</span></div></div>
+  </section>
+  <section aria-label="Assignment templates">
+    <h2>Assignment templates</h2>
+    <p class="tplnote">Each assignment has a Canva template in two layouts. Pick one. Open the link, sign in to Canva, then choose <b>File &gt; Make a copy</b> and work in your copy. Slide 2 of every template explains how to export a web-friendly PDF.</p>
+    <div class="tpl">
+      <div class="card"><div class="top"><span class="code">A1</span></div><h3>Photographic Techniques</h3><div class="links"><a href="https://canva.link/9ny8ccegmn9ccqa" target="_blank" rel="noopener">Landscape 16:9</a><a href="https://canva.link/1t5v7ya23sfvo5y" target="_blank" rel="noopener">A4 portrait</a></div></div>
+      <div class="card"><div class="top"><span class="code">A2</span></div><h3>Photographic Craft and Visual Analysis</h3><div class="links"><a href="https://canva.link/1z4qaogxe5k54w3" target="_blank" rel="noopener">Landscape 16:9</a><a href="https://canva.link/le1hc7ofyp45g05" target="_blank" rel="noopener">A4 portrait</a></div></div>
+      <div class="card"><div class="top"><span class="code">A3</span></div><h3>Final Folio</h3><div class="links"><a href="https://canva.link/6uixzxmn0iou77k" target="_blank" rel="noopener">Landscape 16:9</a><a href="https://canva.link/uq79roivngmbe6s" target="_blank" rel="noopener">A4 portrait</a></div></div>
+    </div>
+  </section>
+  <section>
+    <h2>Week by week</h2>
+    <div class="weeks"><article class="wk"><div class="hd"><span class="no">Week 1</span><span class="dt">Oct 19</span></div><span class="att">Attendance: M1 videos</span><h3>Module 0 + Module 1: Getting set up, the fundamentals</h3><ul><li>Complete the Research Consent form to unlock the modules</li><li>Camera advice and settings</li><li>What is photography? Discussion 1.3</li></ul></article><article class="wk"><div class="hd"><span class="no">Week 2</span><span class="dt">Oct 26</span></div><span class="att">Attendance: M1 videos</span><h3>Module 1: Exposure triangle</h3><ul><li>Aperture, shutter speed, ISO</li><li>Shooting exercise and Module 1 quiz</li><li>Start A1: long exposure, freeze motion, aperture pair</li></ul></article><article class="wk"><div class="hd"><span class="no">Week 3</span><span class="dt">Nov 2</span></div><span class="att">Attendance: M2 videos</span><h3>Module 2 + Module 3: Composition, colour, light and post-production</h3><ul><li>Work through both modules side by side</li><li>Lightroom: import, rate, global adjustments</li><li>Keep working on A1</li><li>Wed Nov 4: online support session for A1</li></ul></article><article class="wk hl"><div class="hd"><span class="no">Week 4</span><span class="dt">Nov 9</span></div><span class="att">Attendance: M2 videos</span><h3>Module 2 + Module 3, continued</h3><ul><li>Natural light and time of day</li><li>Local adjustments, black and white, export</li><li>Early feedback from your lecturer this week</li></ul><div class="duetag"><b>DUE Fri Nov 13, 18:00</b>A1 Photographic Techniques</div></article><article class="wk"><div class="hd"><span class="no">Week 5</span><span class="dt">Nov 16</span></div><span class="att">Attendance: M4 videos</span><h3>Module 4: Photographic genres</h3><ul><li>Still life, landscape, portrait, street, conceptual</li><li>Start A2 Exercise 1</li></ul></article><article class="wk"><div class="hd"><span class="no">Week 6</span><span class="dt">Nov 23</span></div><span class="att">Attendance: M4 videos</span><h3>Module 4: Visual analysis</h3><ul><li>Visual consistency and analysis examples</li><li>A2 Exercise 2</li><li>Wed Nov 25: online support session for A2</li></ul></article><article class="wk hl"><div class="hd"><span class="no">Week 7</span><span class="dt">Nov 30</span></div><span class="att">Attendance: M4 videos</span><h3>Self-study week</h3><ul><li>Finish and submit A2</li></ul><div class="duetag"><b>DUE Fri Dec 4, 18:00</b>A2 Craft and Visual Analysis</div></article><article class="wk"><div class="hd"><span class="no">Week 8</span><span class="dt">Dec 7</span></div><span class="att">Attendance: M4 videos</span><h3>Module 4, wrap-up</h3><ul><li>Discussion 4.12 and Module 4 quiz</li><li>Look ahead to your final folio</li></ul></article><article class="wk"><div class="hd"><span class="no">Week 9</span><span class="dt">Dec 14</span></div><h3>Module 5: Plan your project</h3><ul><li>Brainstorm at least 2 themes</li><li>Moodboard of 5 to 10 reference images</li><li>Book your lecturer consultation for A3</li></ul></article><article class="wk"><div class="hd"><span class="no">Week 10</span><span class="dt">Dec 21</span></div><h3>Module 5: Shoot</h3><ul><li>Photoshoot for your folio</li><li>Work the scene, shoot more than you need</li></ul></article><article class="wk"><div class="hd"><span class="no">Week 11</span><span class="dt">Dec 28</span></div><h3>Module 5: Edit</h3><ul><li>Image selection and flow</li><li>Consistent edit across the series</li><li>Wed Dec 30: online support session for A3</li></ul></article><article class="wk"><div class="hd"><span class="no">Week 12</span><span class="dt">Jan 4</span></div><h3>Module 5: Finish your folio</h3><ul><li>Final export and PDF</li></ul></article><article class="wk hl"><div class="hd"><span class="no">Submit</span><span class="dt">Jan 11</span></div><h3>Hand in your folio</h3><ul><li>Final checks on your PDF</li></ul><div class="duetag"><b>DUE Fri Jan 15, 18:00</b>A3 Final Folio</div></article></div>
+  </section>
+  <section>
+    <h2>How to do well</h2>
+    <div class="tips"><div class="tip"><b>Do each module's quiz</b><span>The quizzes give you instant feedback, and you can retry them as often as you like.</span></div><div class="tip"><b>Use consultations</b><span>There are no live classes, so book a consultation with your lecturer or an Adobe coach when you get stuck.</span></div><div class="tip"><b>Share your photos</b><span>Post in the discussions and comment on your classmates' work. Feedback is how you improve.</span></div><div class="tip"><b>Shoot RAW and edit in Lightroom</b><span>Module 0 shows you how to set up your camera and Lightroom before you start.</span></div><div class="tip"><b>Get permission on campus</b><span>You need permission to photograph on campus. Carry the filming and photography form when shooting in public.</span></div><div class="tip"><b>Use AI only where allowed</b><span>AI can support research and ideas, never your final work. Reference any AI you use.</span></div></div>
+  </section>
+  <p class="foot">All due times are Vietnam time (ICT). Canvas is the official record: if anything here differs from Canvas, Canvas wins. Feedback on each assignment comes back within two weeks of its due date, in Marks on Canvas.</p>
+</div>
+</body>
+</html>
