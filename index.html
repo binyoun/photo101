@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photography 101 | RMIT Vietnam</title>
-  <link rel="icon" type="image/png" href="/photo101/favicon.png"/>
+    <meta name="description" content="Photography 101 hub, RMIT University Vietnam: course roadmap, assignments and templates, tools, and references.">
+    <link rel="icon" type="image/png" href="/photo101/favicon.png"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,23 +16,48 @@
             box-sizing: border-box;
         }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
+        :root {
+            --bg: #000;
+            --card: #0d0d0d;
+            --card-hover: #141414;
+            --line: #262626;
+            --ink: #ececec;
+            --muted: #9a9a9a;
+            --dim: #6a6a6a;
+            --red: #e60028;
+            --red-light: #ff3355;
+            --f-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+            --f-body: "Source Sans 3", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 4rem;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: var(--f-body);
+            line-height: 1.55;
+        }
+
+        a { color: inherit; }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            position: relative;
+            height: 100vh;
+            height: 100svh;
+            min-height: 520px;
+            overflow: hidden;
         }
 
         .pixel-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute;
+            inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -58,18 +87,26 @@
         }
 
         .content-overlay {
-            position: fixed;
+            position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             padding: 2rem;
+            padding-top: 4rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 1.5rem;
             pointer-events: none;
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
-            padding-top: 4rem;
+        }
+
+        .instructions {
+            color: #555;
+            font-family: var(--f-mono);
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
 
         .nav-buttons {
@@ -83,16 +120,16 @@
         .nav-btn {
             background: rgba(0,0,0,0.8);
             border: 1px solid #333;
-            color: #888;
+            color: #999;
             padding: 0.875rem 2rem;
+            font-family: var(--f-body);
             font-size: 0.9rem;
             letter-spacing: 2px;
             text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
 
         .nav-btn:hover {
@@ -102,60 +139,387 @@
         }
 
         .nav-btn.primary {
-            border-color: #e60028;
-            color: #e60028;
+            border-color: var(--red);
+            color: var(--red);
         }
 
         .nav-btn.primary:hover {
-            background: #e60028;
+            background: var(--red);
             color: #fff;
             box-shadow: 0 0 30px rgba(230, 0, 40, 0.4);
         }
 
-        .footer-info {
+        .scroll-cue {
+            color: #555;
+            font-family: var(--f-mono);
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-decoration: none;
+            pointer-events: auto;
+        }
+
+        .scroll-cue:hover { color: #aaa; }
+
+        /* ---------- Sticky bar ---------- */
+        .bar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .bar-inner {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            height: 3.25rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .bar-inner::-webkit-scrollbar { display: none; }
+
+        .bar-logo {
+            font-family: var(--f-display);
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .bar-logo span { color: var(--red); }
+
+        .bar-links {
+            display: flex;
+            gap: 1.25rem;
+            margin-left: auto;
+        }
+
+        .bar-links a {
+            font-family: var(--f-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .bar-links a:hover { color: #fff; }
+
+        /* ---------- Sections ---------- */
+        main {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 16px 4rem;
+        }
+
+        section {
+            padding: 4rem 0 0;
+        }
+
+        .label {
+            font-family: var(--f-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--red);
+        }
+
+        h2 {
+            font-family: var(--f-display);
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            line-height: 1.05;
+            text-transform: uppercase;
+            letter-spacing: 0.01em;
+            margin: 0.35rem 0 0.75rem;
+        }
+
+        .lede {
+            color: var(--muted);
+            max-width: 62ch;
+            font-size: 1.05rem;
+        }
+
+        h3 {
+            font-family: var(--f-display);
+            font-weight: 600;
+            font-size: 1.45rem;
+            line-height: 1.15;
+            letter-spacing: 0.01em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+            gap: 1rem;
+            margin-top: 1.75rem;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            min-width: 0;
+        }
+
+        a.card {
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        a.card:hover { background: var(--card-hover); border-color: #444; }
+        a.card:hover h3 { color: #fff; }
+
+        .card p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .meta {
+            font-family: var(--f-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+
+        .go {
+            margin-top: auto;
+            padding-top: 0.4rem;
+            font-family: var(--f-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--red);
+        }
+
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: auto;
+            padding-top: 0.5rem;
+        }
+
+        .links a, .btn {
+            font-family: var(--f-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--ink);
+            border: 1px solid #3a3a3a;
+            padding: 0.55rem 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .links a:hover, .btn:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        .btn.primary {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .btn.primary:hover {
+            background: var(--red);
+            color: #fff;
+        }
+
+        /* This semester */
+        .now {
+            margin-top: 1.75rem;
+            border: 1px solid var(--line);
+            background: var(--card);
+            padding: 1.75rem;
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 2rem;
+        }
+
+        .now-facts {
+            list-style: none;
+            display: grid;
+            gap: 0.55rem;
+        }
+
+        .now-facts li {
+            display: flex;
+            gap: 0.75rem;
+            font-size: 0.98rem;
+        }
+
+        .now-facts li b {
+            font-family: var(--f-mono);
+            font-weight: 400;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--dim);
+            min-width: 7.5rem;
+            padding-top: 0.2rem;
+        }
+
+        .now-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            align-items: stretch;
+        }
+
+        .now-actions .btn { text-align: center; padding: 0.8rem 1rem; }
+
+        /* Assignments */
+        .weight {
+            font-family: var(--f-display);
+            font-weight: 700;
+            font-size: 2.6rem;
+            line-height: 1;
+            color: var(--red);
+        }
+
+        .a-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 1rem;
+        }
+
+        .due {
+            font-family: var(--f-mono);
+            font-size: 0.75rem;
+            color: var(--ink);
+            border-left: 2px solid var(--red);
+            padding-left: 0.6rem;
+        }
+
+        /* Modules */
+        .modules {
+            margin-top: 1.75rem;
+            border-top: 1px solid var(--line);
+        }
+
+        .module {
+            display: grid;
+            grid-template-columns: 5.5rem 7.5rem 1fr;
+            gap: 1rem;
+            padding: 1.1rem 0;
+            border-bottom: 1px solid var(--line);
+            align-items: baseline;
+        }
+
+        .module .num {
+            font-family: var(--f-display);
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--red);
+        }
+
+        .module .weeks {
+            font-family: var(--f-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+
+        .module h3 { font-size: 1.3rem; }
+
+        .module p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-top: 0.2rem;
+        }
+
+        /* References */
+        .ref-group {
+            margin-top: 2.5rem;
+        }
+
+        .ref-group > .meta {
+            color: var(--muted);
+        }
+
+        .ref-group .grid { margin-top: 0.9rem; }
+
+        .ref-group .card h3 { font-size: 1.25rem; }
+
+        /* Rules */
+        .rules {
+            margin-top: 1.75rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+            gap: 1.25rem 2rem;
+            list-style: none;
+        }
+
+        .rules li {
+            border-top: 1px solid var(--line);
+            padding-top: 0.9rem;
+        }
+
+        .rules b {
+            display: block;
+            font-family: var(--f-display);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .rules span { color: var(--muted); font-size: 0.95rem; }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--line);
+            margin-top: 4rem;
+            padding: 2.5rem 16px 3rem;
             text-align: center;
             color: #555;
             font-size: 0.8rem;
             line-height: 1.8;
         }
 
-        .footer-info .school {
-            color: #666;
+        footer .school {
+            color: #777;
             letter-spacing: 2px;
             text-transform: uppercase;
             font-size: 0.75rem;
         }
 
-        .footer-info .university {
-            color: #888;
+        footer .university {
+            color: #999;
             font-weight: 600;
             letter-spacing: 3px;
             text-transform: uppercase;
             margin-top: 0.25rem;
         }
 
-        .footer-info .copyright {
+        footer .copyright {
             margin-top: 1rem;
-            color: #444;
             font-size: 0.75rem;
         }
 
-        .footer-info a {
-            color: #e60028;
+        footer a {
+            color: var(--red);
             text-decoration: none;
-            transition: color 0.2s;
         }
 
-        .footer-info a:hover {
-            color: #ff3355;
-        }
-
-        .instructions {
-            color: #444;
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
+        footer a:hover { color: var(--red-light); }
 
         @media (max-width: 768px) {
             .pixel {
@@ -164,14 +528,29 @@
             }
 
             .nav-btn {
-                padding: 0.75rem 1.5rem;
+                padding: 0.75rem 1.25rem;
                 font-size: 0.8rem;
             }
 
             .content-overlay {
-                padding: 1.5rem;
+                padding: 1.5rem 16px;
                 padding-top: 3rem;
             }
+
+            .now {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1.25rem;
+            }
+
+            .module {
+                grid-template-columns: 3.5rem 1fr;
+                gap: 0.2rem 1rem;
+            }
+
+            .module .weeks { grid-column: 2; grid-row: 1; }
+            .module .body { grid-column: 2; }
+            .module .num { grid-row: 1 / span 2; }
         }
 
         @media (max-width: 480px) {
@@ -179,33 +558,321 @@
                 width: 6px;
                 height: 6px;
             }
+
+            .nav-buttons { gap: 0.6rem; }
+
+            .nav-btn {
+                padding: 0.7rem 1rem;
+                font-size: 0.72rem;
+                letter-spacing: 1.5px;
+            }
+
+            .now-facts li { flex-direction: column; gap: 0; }
         }
     </style>
 </head>
 <body>
-    <div class="pixel-background" id="pixelBackground">
-        <div class="pixel-grid" id="pixelGrid"></div>
-    </div>
+    <header class="hero" id="hero">
+        <div class="pixel-background" id="pixelBackground">
+            <div class="pixel-grid" id="pixelGrid"></div>
+        </div>
 
-    <div class="content-overlay">
-        <p class="instructions">Move cursor to illuminate</p>
-        
-        <nav class="nav-buttons">
-            <a href="camera-checker.html" class="nav-btn primary">Camera Checker</a>
-            <!-- Add more navigation buttons here -->
-            <!-- <a href="syllabus.html" class="nav-btn">Syllabus</a> -->
-            <!-- <a href="resources.html" class="nav-btn">Resources</a> -->
-            <!-- <a href="gallery.html" class="nav-btn">Student Gallery</a> -->
-        </nav>
+        <div class="content-overlay">
+            <p class="instructions">Move cursor to illuminate</p>
 
-        <div class="footer-info">
-            <div class="school">School of Communication & Design</div>
-            <div class="university">RMIT University Vietnam</div>
-            <div class="copyright">
-                © 2025 Bin Youn | <a href="mailto:bin.youn@rmit.edu.vn">bin.youn@rmit.edu.vn</a>
-            </div>
+            <nav class="nav-buttons" aria-label="Quick links">
+                <a href="roadmap.html" class="nav-btn primary">Roadmap</a>
+                <a href="#assignments" class="nav-btn">Assignments</a>
+                <a href="camera-checker.html" class="nav-btn">Camera Checker</a>
+                <a href="#references" class="nav-btn">References</a>
+            </nav>
+
+            <a href="#start" class="scroll-cue">Scroll for everything ↓</a>
+        </div>
+    </header>
+
+    <div class="bar">
+        <div class="bar-inner">
+            <a href="#hero" class="bar-logo">Photography <span>101</span></a>
+            <nav class="bar-links" aria-label="Sections">
+                <a href="#start">Start</a>
+                <a href="#assignments">Assignments</a>
+                <a href="#modules">Modules</a>
+                <a href="#tools">Tools</a>
+                <a href="#references">References</a>
+                <a href="#rules">Rules</a>
+            </nav>
         </div>
     </div>
+
+    <main>
+        <section id="start">
+            <span class="label">Start here</span>
+            <h2>This semester</h2>
+            <p class="lede">Learn to control exposure, composition and light, edit in Lightroom, read photographs critically, and finish with a portfolio series of your own. Everything for the course lives on this page; the official record is always Canvas.</p>
+
+            <div class="now">
+                <ul class="now-facts">
+                    <li><b>Semester</b>Semester 3, 2026 · Oct 19 to Jan 15</li>
+                    <li><b>Course</b>VART3626 | VART3700 Photography 101</li>
+                    <li><b>Format</b>Asynchronous, online. No live classes; work through the Canvas modules each week.</li>
+                    <li><b>Workload</b>About 10 hours of study a week</li>
+                    <li><b>You need</b>A DSLR or mirrorless camera, and Adobe Lightroom</li>
+                    <li><b>Attendance</b>Watch at least 50% of the lecture videos in Modules 1, 2 and 4, inside Canvas</li>
+                    <li><b>Support</b>Online sessions on Wed Nov 4 (A1), Wed Nov 25 (A2) and Wed Dec 30 (A3)</li>
+                </ul>
+                <div class="now-actions">
+                    <a class="btn primary" href="https://rmit.instructure.com/courses/174712" target="_blank" rel="noopener">Open Canvas course →</a>
+                    <a class="btn" href="roadmap.html">Week-by-week roadmap →</a>
+                    <a class="btn" href="https://au.miro.com/app/board/u3jVOf_GAsc=/?share_link_id=675895750787" target="_blank" rel="noopener">Support session board (Miro) →</a>
+                    <a class="btn" href="mailto:bin.youn@rmit.edu.vn">Email your lecturer →</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="assignments">
+            <span class="label">How you are assessed</span>
+            <h2>Assignments</h2>
+            <p class="lede">Each assignment has a Canva template in two layouts. Open a link, sign in to Canva, choose <b>File &gt; Make a copy</b>, and work in your copy. Slide 2 of every template shows how to export a web-friendly PDF. Submit on Canvas as a PDF.</p>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="a-head">
+                        <span class="meta">A1 · Weeks 2 to 4</span>
+                        <span class="weight">15%</span>
+                    </div>
+                    <h3>Photographic Techniques</h3>
+                    <p>4 images with technical captions: one long exposure, one frozen movement, and one scene at a large then a small aperture. Plus a 200-word reflection.</p>
+                    <span class="due">Due Fri Nov 13, 18:00</span>
+                    <div class="links">
+                        <a href="https://canva.link/9ny8ccegmn9ccqa" target="_blank" rel="noopener">Template 16:9</a>
+                        <a href="https://canva.link/1t5v7ya23sfvo5y" target="_blank" rel="noopener">Template A4</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="a-head">
+                        <span class="meta">A2 · Weeks 5 to 7</span>
+                        <span class="weight">45%</span>
+                    </div>
+                    <h3>Photographic Craft and Visual Analysis</h3>
+                    <p>16 images (4 composition, 12 genre), 4 short reflections and one 400-word visual analysis.</p>
+                    <span class="due">Due Fri Dec 4, 18:00</span>
+                    <div class="links">
+                        <a href="https://canva.link/1z4qaogxe5k54w3" target="_blank" rel="noopener">Template 16:9</a>
+                        <a href="https://canva.link/le1hc7ofyp45g05" target="_blank" rel="noopener">Template A4</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="a-head">
+                        <span class="meta">A3 · Weeks 9 to 12</span>
+                        <span class="weight">40%</span>
+                    </div>
+                    <h3>Final Folio</h3>
+                    <p>20 to 30 connected images. Develop two themes, build a moodboard, and attend the required consultation with your lecturer.</p>
+                    <span class="due">Due Fri Jan 15, 18:00</span>
+                    <div class="links">
+                        <a href="https://canva.link/6uixzxmn0iou77k" target="_blank" rel="noopener">Template 16:9</a>
+                        <a href="https://canva.link/uq79roivngmbe6s" target="_blank" rel="noopener">Template A4</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="modules">
+            <span class="label">What you learn</span>
+            <h2>Modules</h2>
+            <p class="lede">The course runs in six modules on Canvas. Each has lecture videos, a quiz you can retry, and a discussion to share your photos.</p>
+
+            <div class="modules">
+                <div class="module">
+                    <span class="num">M0</span>
+                    <span class="weeks">Week 1</span>
+                    <div class="body">
+                        <h3>Getting set up</h3>
+                        <p>Research consent form to unlock the modules, camera advice and settings, Lightroom setup, shooting RAW.</p>
+                    </div>
+                </div>
+                <div class="module">
+                    <span class="num">M1</span>
+                    <span class="weeks">Weeks 1 to 2</span>
+                    <div class="body">
+                        <h3>The fundamentals and the exposure triangle</h3>
+                        <p>What is photography? Aperture, shutter speed and ISO, a shooting exercise and the Module 1 quiz.</p>
+                    </div>
+                </div>
+                <div class="module">
+                    <span class="num">M2</span>
+                    <span class="weeks">Weeks 3 to 4</span>
+                    <div class="body">
+                        <h3>Composition, colour and light</h3>
+                        <p>Framing and composition, colour, natural light and time of day.</p>
+                    </div>
+                </div>
+                <div class="module">
+                    <span class="num">M3</span>
+                    <span class="weeks">Weeks 3 to 4</span>
+                    <div class="body">
+                        <h3>Post-production</h3>
+                        <p>Lightroom: import, rate, global and local adjustments, black and white, export.</p>
+                    </div>
+                </div>
+                <div class="module">
+                    <span class="num">M4</span>
+                    <span class="weeks">Weeks 5 to 8</span>
+                    <div class="body">
+                        <h3>Genres and visual analysis</h3>
+                        <p>Still life, landscape, portrait, street and conceptual photography; visual consistency and how to analyse an image.</p>
+                    </div>
+                </div>
+                <div class="module">
+                    <span class="num">M5</span>
+                    <span class="weeks">Weeks 9 to 12</span>
+                    <div class="body">
+                        <h3>Your final folio</h3>
+                        <p>Plan two themes and a moodboard, book your consultation, shoot, select and sequence, keep the edit consistent, export the PDF.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tools">
+            <span class="label">Use these</span>
+            <h2>Tools</h2>
+
+            <div class="grid">
+                <a class="card" href="camera-checker.html">
+                    <span class="meta">Before you buy or borrow</span>
+                    <h3>Camera Checker</h3>
+                    <p>Check whether your camera has the manual controls the course needs.</p>
+                    <span class="go">Open →</span>
+                </a>
+                <a class="card" href="roadmap.html">
+                    <span class="meta">Week by week</span>
+                    <h3>Student Roadmap</h3>
+                    <p>The whole semester on one page: modules, attendance, support sessions and every due date.</p>
+                    <span class="go">Open →</span>
+                </a>
+                <a class="card" href="https://au.miro.com/app/board/u3jVOf_GAsc=/?share_link_id=675895750787" target="_blank" rel="noopener">
+                    <span class="meta">Online support sessions</span>
+                    <h3>Support Board</h3>
+                    <p>Assignment guidance and a showcase of HD work from the online support sessions.</p>
+                    <span class="go">Open on Miro →</span>
+                </a>
+                <a class="card" href="https://helpx.adobe.com/lightroom-classic/tutorials.html" target="_blank" rel="noopener">
+                    <span class="meta">Adobe</span>
+                    <h3>Lightroom Tutorials</h3>
+                    <p>Adobe's own step-by-step lessons for importing, editing and exporting in Lightroom Classic.</p>
+                    <span class="go">Open →</span>
+                </a>
+            </div>
+        </section>
+
+        <section id="references">
+            <span class="label">Go further</span>
+            <h2>References</h2>
+            <p class="lede">Related material to look at, read and try. None of it is required, but it will make your photographs and your writing better.</p>
+
+            <div class="ref-group">
+                <span class="meta">Technique</span>
+                <div class="grid">
+                    <a class="card" href="https://www.cambridgeincolour.com/tutorials.htm" target="_blank" rel="noopener">
+                        <span class="meta">Cambridge in Colour</span>
+                        <h3>Photography Tutorials</h3>
+                        <p>Clear, illustrated explanations of exposure, depth of field, light and colour. Good for revising Module 1.</p>
+                        <span class="go">Read →</span>
+                    </a>
+                    <a class="card" href="https://helpx.adobe.com/lightroom-classic/user-guide.html" target="_blank" rel="noopener">
+                        <span class="meta">Adobe</span>
+                        <h3>Lightroom Classic User Guide</h3>
+                        <p>The full manual, for when you need to look up a specific tool or setting.</p>
+                        <span class="go">Read →</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="ref-group">
+                <span class="meta">Looking at photographs</span>
+                <div class="grid">
+                    <a class="card" href="https://www.magnumphotos.com/" target="_blank" rel="noopener">
+                        <span class="meta">Magnum Photos</span>
+                        <h3>Documentary and street</h3>
+                        <p>Work from the photographers' cooperative. Useful for the street and portrait genres in Module 4.</p>
+                        <span class="go">Browse →</span>
+                    </a>
+                    <a class="card" href="https://www.moma.org/collection/" target="_blank" rel="noopener">
+                        <span class="meta">MoMA</span>
+                        <h3>Museum of Modern Art collection</h3>
+                        <p>Search the collection for photographers you meet in the lectures and study how their series hold together.</p>
+                        <span class="go">Browse →</span>
+                    </a>
+                    <a class="card" href="https://www.icp.org/" target="_blank" rel="noopener">
+                        <span class="meta">ICP</span>
+                        <h3>International Center of Photography</h3>
+                        <p>Exhibitions and essays on photography's history and its current practice.</p>
+                        <span class="go">Browse →</span>
+                    </a>
+                    <a class="card" href="https://www.tate.org.uk/art/art-terms/p/photography" target="_blank" rel="noopener">
+                        <span class="meta">Tate</span>
+                        <h3>Photography, art term</h3>
+                        <p>A short introduction to photography as an art form, with links to key works. Handy for the visual analysis in A2.</p>
+                        <span class="go">Read →</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="ref-group">
+                <span class="meta">From the RMIT photography studio</span>
+                <div class="grid">
+                    <a class="card" href="https://binyoun.github.io/reroot/" target="_blank" rel="noopener">
+                        <span class="meta">Creative Photography exhibitions</span>
+                        <h3>rễ-root</h3>
+                        <p>Exhibitions, artist talks and workshops from Creative Photography, the course many students take after Photo 101.</p>
+                        <span class="go">Visit →</span>
+                    </a>
+                    <a class="card" href="https://binyoun.github.io/commercial-photography/" target="_blank" rel="noopener">
+                        <span class="meta">VART3672</span>
+                        <h3>Commercial Photography</h3>
+                        <p>The studio course: product, portrait and brand work, from the first tabletop frame to a client-style pitch.</p>
+                        <span class="go">Visit →</span>
+                    </a>
+                    <a class="card" href="https://binyoun.github.io/alt-lab/" target="_blank" rel="noopener">
+                        <span class="meta">History, hands on</span>
+                        <h3>Alternative Process Lab</h3>
+                        <p>Print your own photo as a cyanotype, salt print, albumen print or daguerreotype, right in the browser.</p>
+                        <span class="go">Open →</span>
+                    </a>
+                    <a class="card" href="https://binyoun.github.io/webar/" target="_blank" rel="noopener">
+                        <span class="meta">Beyond the print</span>
+                        <h3>Elemental WebAR</h3>
+                        <p>Turn a printed photograph into an AR marker that opens on any phone. No app, no account.</p>
+                        <span class="go">Open →</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="rules">
+            <span class="label">Good to know</span>
+            <h2>Rules and tips</h2>
+
+            <ul class="rules">
+                <li><b>No generative AI images</b><span>You may not use generative AI to create images, or to add or change elements of your images. AI can support research and ideas; reference any AI you use.</span></li>
+                <li><b>Get permission to shoot</b><span>You need permission to photograph on campus. Carry the filming and photography form when shooting in public.</span></li>
+                <li><b>Shoot RAW, edit in Lightroom</b><span>Module 0 shows you how to set up your camera and Lightroom before you start.</span></li>
+                <li><b>Do every quiz</b><span>They give instant feedback and you can retry them as often as you like.</span></li>
+                <li><b>Share and comment</b><span>Post in the discussions and comment on classmates' work. Feedback is how you improve.</span></li>
+                <li><b>Canvas wins</b><span>All times are Vietnam time (ICT). If anything here differs from Canvas, Canvas is correct.</span></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div class="school">School of Communication &amp; Design</div>
+        <div class="university">RMIT University Vietnam</div>
+        <div class="copyright">
+            © 2026 Bin Youn | <a href="mailto:bin.youn@rmit.edu.vn">bin.youn@rmit.edu.vn</a>
+        </div>
+    </footer>
 
     <script>
         // Pixel font definition for "PHOTOGRAPHY" and "101"
@@ -324,6 +991,13 @@
         let mouseY = -1000;
         let time = 0;
         let pixelSize = 12;
+        const hero = document.getElementById('hero');
+        let heroVisible = true;
+        let lastWidth = window.innerWidth;
+
+        new IntersectionObserver((entries) => {
+            heroVisible = entries[0].isIntersecting;
+        }).observe(hero);
 
         function getTextWidth(text) {
             let width = 0;
@@ -344,8 +1018,12 @@
                 pixelSize = 12;
             }
 
+            // Shrink pixels on narrow screens so the title always fits with a margin
+            const fitSize = Math.floor(window.innerWidth / (getTextWidth(line1) + 6));
+            pixelSize = Math.max(3, Math.min(pixelSize, fitSize));
+
             gridCols = Math.ceil(window.innerWidth / pixelSize);
-            gridRows = Math.ceil(window.innerHeight / pixelSize);
+            gridRows = Math.ceil(hero.clientHeight / pixelSize);
 
             // Build text pattern
             const text1Width = getTextWidth(line1);
@@ -447,6 +1125,10 @@
         }
 
         function updatePixels() {
+            if (!heroVisible) {
+                requestAnimationFrame(updatePixels);
+                return;
+            }
             time += 0.015;
 
             for (let row = 0; row < pixelElements.length; row++) {
@@ -507,25 +1189,27 @@
             requestAnimationFrame(updatePixels);
         }
 
+        function setPointer(x, y) {
+            const rect = hero.getBoundingClientRect();
+            mouseX = x - rect.left;
+            mouseY = y - rect.top;
+        }
+
         document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+            setPointer(e.clientX, e.clientY);
         });
 
-        document.addEventListener('touchmove', (e) => {
+        hero.addEventListener('touchmove', (e) => {
             if (e.touches.length > 0) {
-                mouseX = e.touches[0].clientX;
-                mouseY = e.touches[0].clientY;
-                e.preventDefault();
+                setPointer(e.touches[0].clientX, e.touches[0].clientY);
             }
-        }, { passive: false });
+        }, { passive: true });
 
-        document.addEventListener('touchstart', (e) => {
+        hero.addEventListener('touchstart', (e) => {
             if (e.touches.length > 0) {
-                mouseX = e.touches[0].clientX;
-                mouseY = e.touches[0].clientY;
+                setPointer(e.touches[0].clientX, e.touches[0].clientY);
             }
-        });
+        }, { passive: true });
 
         document.addEventListener('mouseleave', () => {
             mouseX = -1000;
@@ -536,6 +1220,9 @@
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
+                // Mobile browsers fire resize when the address bar hides; only rebuild on width changes
+                if (window.innerWidth === lastWidth) return;
+                lastWidth = window.innerWidth;
                 calculateGrid();
                 createPixelGrid();
             }, 200);
