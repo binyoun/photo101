@@ -272,6 +272,128 @@
             font-size: 0.85rem;
             opacity: 0.6;
         }
+
+        .ask-card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            border-top: 4px solid #e60028;
+        }
+
+        .ask-card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ask-intro {
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+
+        .ask-step {
+            font-weight: 600;
+            color: #333;
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .ask-card input[type="text"] {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        .ask-card input[type="text"]:focus {
+            outline: none;
+            border-color: #e60028;
+        }
+
+        .prompt-box {
+            width: 100%;
+            min-height: 15rem;
+            padding: 1rem;
+            font-family: Consolas, Menlo, monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: #fafafa;
+            color: #1a1a1a;
+            resize: vertical;
+        }
+
+        .ask-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .ask-btn {
+            display: inline-block;
+            padding: 0.7rem 1.1rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 6px;
+            border: 2px solid #1a1a1a;
+            background: white;
+            color: #1a1a1a;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .ask-btn:hover { background: #f0f0f0; }
+
+        .ask-btn.primary {
+            background: #e60028;
+            border-color: #e60028;
+            color: white;
+        }
+
+        .ask-btn.primary:hover { background: #c40022; }
+
+        .ask-btn[aria-disabled="true"] {
+            opacity: 0.45;
+            pointer-events: none;
+        }
+
+        .copy-status {
+            font-size: 0.9rem;
+            color: #2e7d32;
+            align-self: center;
+            min-height: 1.2em;
+        }
+
+        .self-check {
+            margin-top: 0.5rem;
+            padding-left: 1.25rem;
+            color: #444;
+        }
+
+        .self-check li { margin-bottom: 0.4rem; }
+
+        .ask-note {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #fff8e1;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .ask-note a { color: #c40022; }
+
+        .result .ask-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #c40022;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -292,7 +414,7 @@
             <div class="form-group">
                 <label for="brand">1. Select Camera Brand</label>
                 <select id="brand" onchange="updateModels()">
-                    <option value="">— Choose a brand —</option>
+                    <option value="">Choose a brand</option>
                     <option value="canon">Canon</option>
                     <option value="nikon">Nikon</option>
                     <option value="sony">Sony</option>
@@ -310,7 +432,7 @@
             <div class="form-group">
                 <label for="model">2. Select Camera Model</label>
                 <select id="model" disabled onchange="checkEligibility()">
-                    <option value="">— Choose a model —</option>
+                    <option value="">Choose a model</option>
                 </select>
             </div>
 
@@ -320,6 +442,7 @@
                 <h3 id="resultTitle"></h3>
                 <p id="resultMessage"></p>
                 <ul class="specs-list" id="specsList"></ul>
+                <a class="ask-link" id="askLink" href="#ask" hidden>Check it yourself with the steps below &darr;</a>
             </div>
         </div>
 
@@ -332,7 +455,41 @@
                 <li class="not-allowed">Film cameras are not suitable for this course</li>
             </ul>
             <div class="note">
-                <strong>Note:</strong> If your camera model is not listed, please contact the Course Coordinator to verify suitability.
+                <strong>Note:</strong> If your camera model is not listed, use <a href="#ask">Camera not on the list?</a> below to check it in a few minutes. If you are still unsure, contact the Course Coordinator.
+            </div>
+        </div>
+
+        <div class="ask-card" id="ask">
+            <h2>Camera not on the list?</h2>
+            <p class="ask-intro">Type your camera's exact brand and model. We will write a question you can paste into any AI chat (ChatGPT, Gemini, Claude, Copilot) or use to search Google. You can find the model name on the front or top of the camera, or on the label underneath.</p>
+
+            <label class="ask-step" for="askModel">1. Your camera's brand and model</label>
+            <input type="text" id="askModel" placeholder="e.g. Canon EOS 600D, Sony a6000, Nikon Coolpix P1000" autocomplete="off" oninput="updatePrompt()">
+
+            <p class="ask-step">2. Copy this question into an AI chat</p>
+            <textarea class="prompt-box" id="askPrompt" readonly aria-label="Question to paste into an AI chat"></textarea>
+            <div class="ask-actions">
+                <button type="button" class="ask-btn primary" onclick="copyPrompt()">Copy question</button>
+                <a class="ask-btn" id="askChatGPT" href="https://chatgpt.com/" target="_blank" rel="noopener">Open in ChatGPT</a>
+                <a class="ask-btn" id="askClaude" href="https://claude.ai/new" target="_blank" rel="noopener">Open in Claude</a>
+                <a class="ask-btn" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini (paste it in)</a>
+                <span class="copy-status" id="copyStatus" role="status"></span>
+            </div>
+
+            <p class="ask-step">3. Or search Google</p>
+            <div class="ask-actions">
+                <a class="ask-btn" id="askGoogle" href="https://www.google.com/" target="_blank" rel="noopener" aria-disabled="true">Search Google for the specs</a>
+            </div>
+
+            <p class="ask-step">4. Double-check on the camera itself (30 seconds)</p>
+            <ol class="self-check">
+                <li>Look for an <strong>M</strong> (Manual) setting on the mode dial or in the shooting mode menu. In M mode you should be able to change aperture (f-number), shutter speed and ISO yourself.</li>
+                <li>Open the menu and find <strong>Image Quality</strong> or <strong>File Format</strong>. Look for <strong>RAW</strong> or <strong>RAW+JPEG</strong> (it may be called CR2, CR3, NEF, ARW, RAF, ORF, RW2, PEF or DNG).</li>
+                <li>If you find both, your camera is suitable. If either is missing, it is not.</li>
+            </ol>
+
+            <div class="ask-note">
+                <strong>AI answers can be wrong,</strong> especially for older or less common models. Trust what you see on the camera or on the brand's official specification page. Still unsure? Email <a href="mailto:bin.youn@rmit.edu.vn?subject=Photography%20101%3A%20camera%20check">bin.youn@rmit.edu.vn</a> with your camera model and a photo of its mode dial or Image Quality menu.
             </div>
         </div>
     </main>
@@ -346,7 +503,7 @@
                 <a href="mailto:bin.youn@rmit.edu.vn">bin.youn@rmit.edu.vn</a>
             </div>
             <div class="footer-bottom">
-                RMIT University Vietnam — School of Communication & Design
+                RMIT University Vietnam · School of Communication & Design
             </div>
         </div>
     </footer>
@@ -501,7 +658,7 @@
             const checkBtn = document.getElementById('checkBtn');
             const result = document.getElementById('result');
 
-            modelSelect.innerHTML = '<option value="">— Choose a model —</option>';
+            modelSelect.innerHTML = '<option value="">Choose a model</option>';
             result.style.display = 'none';
             selectedCamera = null;
 
@@ -513,6 +670,12 @@
                     option.textContent = camera.model;
                     modelSelect.appendChild(option);
                 });
+                if (!['mobile', 'film', 'other'].includes(brand)) {
+                    const option = document.createElement('option');
+                    option.value = 'unlisted';
+                    option.textContent = 'My model is not listed';
+                    modelSelect.appendChild(option);
+                }
             } else {
                 modelSelect.disabled = true;
             }
@@ -524,7 +687,10 @@
             const modelIndex = document.getElementById('model').value;
             const checkBtn = document.getElementById('checkBtn');
 
-            if (brand && modelIndex !== '') {
+            if (brand && modelIndex === 'unlisted') {
+                selectedCamera = { model: 'My model is not listed', qualified: null, specs: ['Use the steps below to check your model, or contact the Course Coordinator'] };
+                checkBtn.disabled = false;
+            } else if (brand && modelIndex !== '') {
                 selectedCamera = cameras[brand][modelIndex];
                 checkBtn.disabled = false;
             } else {
@@ -554,9 +720,16 @@
                 resultMessage.textContent = 'This camera does not meet the course requirements. Please see the requirements below or contact the Course Coordinator.';
             } else {
                 result.classList.add('not-qualified');
-                resultTitle.textContent = 'Verification Required';
-                resultMessage.textContent = 'Please contact the Course Coordinator to verify your camera\'s suitability.';
+                resultTitle.textContent = 'Not on our list yet';
+                resultMessage.textContent = 'Your camera may still be suitable. Type its model below to get a ready-made question for an AI chat or Google, then confirm on the camera itself.';
+                const brandSelect = document.getElementById('brand');
+                const askModel = document.getElementById('askModel');
+                if (brandSelect.value !== 'other' && !askModel.value) {
+                    askModel.value = brandSelect.options[brandSelect.selectedIndex].textContent.split(' /')[0] + ' ';
+                    updatePrompt();
+                }
             }
+            document.getElementById('askLink').hidden = selectedCamera.qualified !== null;
 
             selectedCamera.specs.forEach(spec => {
                 const li = document.createElement('li');
@@ -567,6 +740,56 @@
             result.style.display = 'block';
             result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
+
+        function buildPrompt(model) {
+            const name = model || '[type your camera brand and model above]';
+            return `I am a student in an introductory university photography course. Please check whether my camera is suitable: ${name}.
+
+The course requires:
+1. Full manual exposure control: a Manual (M) mode where I can set aperture, shutter speed and ISO myself.
+2. The ability to shoot RAW files (not only JPEG).
+Mobile phones and film cameras are not accepted.
+
+Please answer:
+- Manual (M) mode with aperture, shutter speed and ISO control: YES / NO / UNSURE
+- RAW files: YES / NO / UNSURE (and the RAW file format name, e.g. CR3, NEF, ARW)
+- One-line verdict: suitable or not suitable for the course.
+
+If you are not certain this exact model exists or the information conflicts, say so, and tell me what to look for in the camera's menu to check it myself.`;
+        }
+
+        function updatePrompt() {
+            const model = document.getElementById('askModel').value.trim();
+            const prompt = buildPrompt(model);
+            document.getElementById('askPrompt').value = prompt;
+            document.getElementById('copyStatus').textContent = '';
+            const q = encodeURIComponent(prompt);
+            document.getElementById('askChatGPT').href = model ? 'https://chatgpt.com/?q=' + q : 'https://chatgpt.com/';
+            document.getElementById('askClaude').href = model ? 'https://claude.ai/new?q=' + q : 'https://claude.ai/new';
+            const google = document.getElementById('askGoogle');
+            if (model) {
+                google.href = 'https://www.google.com/search?q=' + encodeURIComponent(model + ' camera specifications manual mode RAW');
+                google.setAttribute('aria-disabled', 'false');
+            } else {
+                google.href = 'https://www.google.com/';
+                google.setAttribute('aria-disabled', 'true');
+            }
+        }
+
+        function copyPrompt() {
+            const box = document.getElementById('askPrompt');
+            const status = document.getElementById('copyStatus');
+            const done = () => { status.textContent = 'Copied. Paste it into any AI chat.'; };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(box.value).then(done, () => { box.select(); document.execCommand('copy'); done(); });
+            } else {
+                box.select();
+                document.execCommand('copy');
+                done();
+            }
+        }
+
+        updatePrompt();
     </script>
 </body>
 </html>
