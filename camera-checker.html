@@ -362,6 +362,12 @@
             pointer-events: none;
         }
 
+        .ask-hint {
+            margin-top: 0.6rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
         .copy-status {
             font-size: 0.9rem;
             color: #2e7d32;
@@ -461,7 +467,7 @@
 
         <div class="ask-card" id="ask">
             <h2>Camera not on the list?</h2>
-            <p class="ask-intro">Type your camera's exact brand and model. We will write a question you can paste into any AI chat (ChatGPT, Gemini, Claude, Copilot) or use to search Google. You can find the model name on the front or top of the camera, or on the label underneath.</p>
+            <p class="ask-intro">Type your camera's exact brand and model. We will write a question you can paste into Val, RMIT's own AI assistant, or any other AI chat (ChatGPT, Gemini, Claude, Copilot), or use to search Google. You can find the model name on the front or top of the camera, or on the label underneath.</p>
 
             <label class="ask-step" for="askModel">1. Your camera's brand and model</label>
             <input type="text" id="askModel" placeholder="e.g. Canon EOS 600D, Sony a6000, Nikon Coolpix P1000" autocomplete="off" oninput="updatePrompt()">
@@ -470,11 +476,13 @@
             <textarea class="prompt-box" id="askPrompt" readonly aria-label="Question to paste into an AI chat"></textarea>
             <div class="ask-actions">
                 <button type="button" class="ask-btn primary" onclick="copyPrompt()">Copy question</button>
+                <a class="ask-btn" href="https://val.rmit.edu.au/" target="_blank" rel="noopener">Open Val (RMIT AI, paste it in)</a>
                 <a class="ask-btn" id="askChatGPT" href="https://chatgpt.com/" target="_blank" rel="noopener">Open in ChatGPT</a>
                 <a class="ask-btn" id="askClaude" href="https://claude.ai/new" target="_blank" rel="noopener">Open in Claude</a>
                 <a class="ask-btn" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini (paste it in)</a>
                 <span class="copy-status" id="copyStatus" role="status"></span>
             </div>
+            <p class="ask-hint">Val is free for RMIT students: sign in with your RMIT account, then paste the question.</p>
 
             <p class="ask-step">3. Or search Google</p>
             <div class="ask-actions">
@@ -779,7 +787,7 @@ If you are not certain this exact model exists or the information conflicts, say
         function copyPrompt() {
             const box = document.getElementById('askPrompt');
             const status = document.getElementById('copyStatus');
-            const done = () => { status.textContent = 'Copied. Paste it into any AI chat.'; };
+            const done = () => { status.textContent = 'Copied. Paste it into Val or any AI chat.'; };
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(box.value).then(done, () => { box.select(); document.execCommand('copy'); done(); });
             } else {
