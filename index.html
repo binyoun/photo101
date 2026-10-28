@@ -518,6 +518,34 @@
 
         footer a:hover { color: var(--red-light); }
 
+        .work {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.75rem;
+        }
+        .work a { display: block; text-decoration: none; min-width: 0; color: inherit; }
+        .work img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            object-fit: cover;
+            background: var(--card);
+            border: 1px solid var(--line);
+            filter: grayscale(35%);
+            transition: filter 0.3s;
+        }
+        .work a:hover img { filter: grayscale(0%); }
+        .work .cap { margin-top: 0.6rem; }
+        .work .cap b { display: block; font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; line-height: 1.25; }
+        .work .cap span { font-size: 0.95rem; color: var(--muted); }
+        .after-work { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+        .outcome-h { font-family: var(--f-display); font-weight: 600; font-size: 1.3rem; margin-top: 2.5rem; }
+        .outcome-p { color: var(--muted); max-width: 46rem; margin-top: 0.4rem; }
+        @media (max-width: 768px) {
+            .work { grid-template-columns: repeat(2, 1fr); }
+        }
+
         @media (max-width: 768px) {
             .pixel {
                 width: 8px;
@@ -589,6 +617,7 @@
                 <a href="#assignments">Assignments</a>
                 <a href="#modules">Modules</a>
                 <a href="#tools">Tools</a>
+                <a href="#work">Student Work</a>
                 <a href="#references">References</a>
                 <a href="#rules">Rules</a>
             </nav>
@@ -754,6 +783,54 @@
                     <p>Adobe's own step-by-step lessons for importing, editing and exporting in Lightroom Classic.</p>
                     <span class="go">Open →</span>
                 </a>
+            </div>
+        </section>
+
+        <section id="work">
+            <span class="label">Where this leads</span>
+            <h2>Student work out in the world</h2>
+            <p class="lede">Photography 101 is where it starts. In September 2026, work by Photography 101 students hung at the Pingyao International Photography Festival in China, alongside students from Creative Photography and Digital Media.</p>
+
+            <h3 class="outcome-h">rễRoute · Pingyao International Photography Festival, China · September 2026</h3>
+            <p class="outcome-p">RMIT Photography from Australia and Vietnam: 31 artists from RMIT Melbourne and RMIT Vietnam, including 8 of our students. Tap a work to read the artist's statement.</p>
+            <div class="work">
+                <a href="https://sites.rmit.edu.au/photography/2026/08/21/diem-nguyen-vo-hong/" target="_blank" rel="noopener">
+                    <img src="image/pingyao-diem-nguyen-vo-hong.jpg" alt="Photograph from Stitching My Roots by Diem Nguyen Vo Hong" loading="lazy">
+                    <div class="cap"><b>Stitching My Roots</b><span>Diem Nguyen Vo Hong · Photography 101</span></div>
+                </a>
+                <a href="https://sites.rmit.edu.au/photography/2026/08/21/chau-ngo-bao/" target="_blank" rel="noopener">
+                    <img src="image/pingyao-chau-ngo-bao.jpg" alt="Photograph from Untitled series (Sa Pa and Ha Noi) by Chau Ngo Bao" loading="lazy">
+                    <div class="cap"><b>Untitled series (Sa Pa and Ha Noi)</b><span>Chau Ngo Bao · Photography 101</span></div>
+                </a>
+                <a href="https://sites.rmit.edu.au/photography/2026/08/21/cuc-ca-thi/" target="_blank" rel="noopener">
+                    <img src="image/pingyao-cuc-ca-thi.jpg" alt="Photograph from Untitled series (Sa Pa) by Cuc Ca Thi" loading="lazy">
+                    <div class="cap"><b>Untitled series (Sa Pa)</b><span>Cuc Ca Thi · Photography 101</span></div>
+                </a>
+                <a href="https://sites.rmit.edu.au/photography/2026/08/21/ton-nguyen/" target="_blank" rel="noopener">
+                    <img src="image/pingyao-ton-nguyen.jpg" alt="Photograph from There Is a Place I Can't Enter by Ton Nguyen" loading="lazy">
+                    <div class="cap"><b>There Is a Place I Can't Enter</b><span>Ton Nguyen · Photography 101 · Creative Photography</span></div>
+                </a>
+                <a href="https://sites.rmit.edu.au/photography/2026/08/21/hao-tran-quoc/" target="_blank" rel="noopener">
+                    <img src="image/pingyao-hao-tran-quoc.jpg" alt="Photograph from The Bond by Hao Tran Quoc" loading="lazy">
+                    <div class="cap"><b>The Bond</b><span>Hao Tran Quoc · Creative Photography</span></div>
+                </a>
+                <a href="https://sites.rmit.edu.au/photography/2026/08/21/nga-le-thi-tuyet/" target="_blank" rel="noopener">
+                    <img src="image/pingyao-nga-le-thi-tuyet.jpg" alt="Photograph from Fallen leaves return to their roots by Nga Le Thi Tuyet" loading="lazy">
+                    <div class="cap"><b>Fallen leaves return to their roots</b><span>Nga Le Thi Tuyet · Creative Photography</span></div>
+                </a>
+                <a href="https://sites.rmit.edu.au/photography/2026/08/21/anh-tran-dang-minh/" target="_blank" rel="noopener">
+                    <img src="image/pingyao-anh-tran-dang-minh.jpg" alt="Photograph from I Miss by Anh Tran Dang Minh" loading="lazy">
+                    <div class="cap"><b>I Miss</b><span>Anh Tran Dang Minh · Creative Photography</span></div>
+                </a>
+                <a href="https://sites.rmit.edu.au/photography/2026/08/21/trang-pham-ha-hoang/" target="_blank" rel="noopener">
+                    <img src="image/pingyao-trang-pham-ha-hoang.jpg" alt="Photograph from Ca Dao by Trang Pham Ha Hoang" loading="lazy">
+                    <div class="cap"><b>Ca Dao</b><span>Trang Pham Ha Hoang · Digital Media</span></div>
+                </a>
+            </div>
+            <div class="after-work">
+                <a class="btn primary" href="https://sites.rmit.edu.au/photography/2026-pingyao-international-photography-festival/" target="_blank" rel="noopener">rễRoute exhibition →</a>
+                <a class="btn" href="https://sites.rmit.edu.au/photography/2026-pingyao-international-photography-festival/installation-views/" target="_blank" rel="noopener">Installation views →</a>
+                <a class="btn" href="https://binyoun.github.io/creative-photography/#outcomes" target="_blank" rel="noopener">Next step: Creative Photography →</a>
             </div>
         </section>
 
