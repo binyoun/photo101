@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Photo 101 Commons</title>
+<meta name="description" content="An optional, casual 3D space for Photography 101 students: find the weekly photo hunt, check what is due, book a consultation, and see who else is around.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="../favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="commons.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="world" tabindex="0" aria-label="The Photo 101 Commons, a 3D plaza you can walk around"></canvas>
+<div id="labels" aria-hidden="true"></div>
+
+<section class="entry">
+  <div class="entry-card">
+    <span class="label">Photography 101</span>
+    <h1>The Commons</h1>
+    <p class="lede">A place to drop into between modules. Find this week's photo hunt, check
+    what is due, book a consultation, and see who else is around.</p>
+    <form autocomplete="off">
+      <label class="field">
+        <span>Your first name or a nickname</span>
+        <input name="name" maxlength="24" spellcheck="false" required>
+      </label>
+      <div class="field">
+        <span>Your colour</span>
+        <div class="swatches"></div>
+      </div>
+      <button class="btn primary" type="submit">Walk in</button>
+    </form>
+    <p class="entry-count"></p>
+    <p class="small">Optional and just for fun: nothing here is graded or counted as attendance.
+    Others see your name, your colour and where you stand. Chat is not kept.
+    Everything official is on <a href="https://rmit.instructure.com/courses/174712" target="_blank" rel="noopener">Canvas</a>.</p>
+    <p class="small"><a href="../">Back to the Photo 101 hub</a></p>
+    <p class="nogl">This browser cannot draw the Commons (it needs WebGL). Everything is also on
+    <a href="../">the hub</a>.</p>
+  </div>
+</section>
+
+<div class="hud" hidden>
+  <div class="hud-top">
+    <div class="here">
+      <span class="room-status"></span>
+      <button class="stamp-btn" title="This week's photo hunt">Photo hunt <b>0/4</b></button>
+    </div>
+    <nav class="links">
+      <a href="../">Hub</a>
+      <a href="https://rmit.instructure.com/courses/174712" target="_blank" rel="noopener">Canvas</a>
+      <a href="../roadmap.html">Roadmap</a>
+    </nav>
+  </div>
+  <div class="hud-bottom">
+    <div class="talk">
+      <ul class="feed" aria-live="polite"></ul>
+      <form class="chat"><input maxlength="140" placeholder="Say something (T)" aria-label="Say something to everyone here"></form>
+    </div>
+  </div>
+  <button class="prompt" hidden><kbd>E</kbd><span></span></button>
+</div>
+
+<div class="toast" role="status" hidden></div>
+
+<div class="hide-menu" role="dialog" aria-label="Hide a person" hidden>
+  <p></p>
+  <div><button class="btn primary" data-yes>Hide</button><button class="btn" data-no>Cancel</button></div>
+</div>
+
+<div class="panel" hidden>
+  <div class="panel-card">
+    <button class="close" data-close aria-label="Close">×</button>
+    <div class="panel-body"></div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    try {
+      if (!document.createElement('canvas').getContext('webgl2')) document.body.classList.add('no-webgl');
+    } catch (e) { document.body.classList.add('no-webgl'); }
+  })();
+</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
