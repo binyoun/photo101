@@ -9,7 +9,7 @@ export const SEMESTER = {
   canvas: 'https://rmit.instructure.com/courses/174712',
   miro: 'https://au.miro.com/app/board/u3jVOf_GAsc=/?share_link_id=675895750787',
   // Microsoft Bookings page for consultations; empty falls back to email
-  bookings: '',
+  bookings: 'https://bookings.cloud.microsoft/book/ConsultationPhotography101Semester220205@rmiteduau.onmicrosoft.com/s/f7aR8TmzeU20pD32IxOwwg2',
   email: 'bin.youn@rmit.edu.vn',
   // The Teams link is posted on Canvas, so the door sends students there
   // rather than publishing a meeting link on a public page.
