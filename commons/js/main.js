@@ -500,9 +500,11 @@ function findPath(fx, fz, tx, tz) {
   const W = GRID.w;
   const start = s[1] * W + s[0];
   const goal = g[1] * W + g[0];
-  const cost = new Float32Array(grid.length).fill(Infinity);
+  // full precision, and each cell expanded once: rounding must not loop the search
+  const cost = new Float64Array(grid.length).fill(Infinity);
   const from = new Int32Array(grid.length).fill(-1);
-  const f = new Float32Array(grid.length);
+  const f = new Float64Array(grid.length);
+  const closed = new Uint8Array(grid.length);
   const h = (n) => Math.hypot((n % W) - g[0], Math.floor(n / W) - g[1]);
   const open = [start];
   cost[start] = 0;
@@ -535,6 +537,8 @@ function findPath(fx, fz, tx, tz) {
   };
   while (open.length) {
     const n = pop();
+    if (closed[n]) continue;
+    closed[n] = 1;
     if (n === goal) break;
     const i = n % W;
     const j = Math.floor(n / W);
@@ -544,7 +548,7 @@ function findPath(fx, fz, tx, tz) {
       const b = j + dj;
       if (a < 0 || b < 0 || a >= W || b >= GRID.h) continue;
       const m = b * W + a;
-      if (grid[m] || (di && dj && (grid[j * W + a] || grid[b * W + i]))) continue;
+      if (closed[m] || grid[m] || (di && dj && (grid[j * W + a] || grid[b * W + i]))) continue;
       const c = cost[n] + (di && dj ? Math.SQRT2 : 1);
       if (c < cost[m]) { cost[m] = c; from[m] = n; f[m] = c + h(m); push(m); }
     }
