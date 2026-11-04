@@ -142,6 +142,18 @@ body.ready #world { opacity: 1; }
 .swatches { display: flex; gap: 8px; flex-wrap: wrap; }
 .swatch { width: 30px; height: 30px; border: 2px solid transparent; outline: 1px solid rgba(255, 255, 255, 0.15); cursor: pointer; }
 .swatch.on { border-color: #fff; }
+.cams { display: flex; gap: 6px; flex-wrap: wrap; }
+.cam {
+  font: 700 0.95rem var(--f-display);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background: var(--card);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.cam.on { background: var(--red); border-color: var(--red); color: #fff; }
 .entry-count { font-family: var(--f-mono); font-size: 0.82rem; color: var(--ink); min-height: 1.3em; }
 .small { font-size: 0.82rem; color: var(--dim); margin-top: 8px; }
 .nogl { display: none; }
@@ -160,7 +172,7 @@ body.no-webgl .nogl { display: block; margin-top: 14px; }
   flex-direction: column;
   justify-content: space-between;
 }
-.hud > * > *, .hud > .prompt { pointer-events: auto; }
+.hud > * > *, .hud > .prompt, .hud > .poses { pointer-events: auto; }
 .hud-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
 .here { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
 .room-status {
@@ -242,6 +254,62 @@ body.no-webgl .nogl { display: block; margin-top: 14px; }
 .prompt[hidden] { display: none; }
 .prompt kbd { font: 600 0.75rem var(--f-mono); background: #111; color: #fff; padding: 2px 6px; }
 @media (pointer: coarse) { .prompt kbd { display: none; } }
+
+/* Club Hall: poses, the self-timer and the flash */
+.poses {
+  position: fixed;
+  right: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.poses[hidden] { display: none; }
+.poses::before {
+  content: "Pose";
+  font: 700 0.95rem var(--f-display);
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+.pose {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 112px;
+  background: #fff;
+  color: #111;
+  border: 0;
+  border-left: 4px solid #f5c400;
+  padding: 7px 12px;
+  font: 700 1rem var(--f-display);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.pose kbd { font: 600 0.72rem var(--f-mono); background: #111; color: #fff; padding: 1px 5px; }
+.pose.on { background: #f5c400; }
+@media (pointer: coarse) { .pose kbd { display: none; } }
+@media (max-width: 640px) {
+  .poses { top: 132px; bottom: auto; left: 16px; right: 16px; flex-direction: row; flex-wrap: wrap; }
+  .poses::before { width: 100%; }
+  .pose { min-width: 0; padding: 6px 10px; }
+}
+.countdown {
+  position: fixed;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  pointer-events: none;
+  font: 700 clamp(6rem, 22vw, 12rem) / 1 var(--f-display);
+  color: #fff;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+.countdown[hidden], .flash[hidden] { display: none; }
+.flash { position: fixed; inset: 0; z-index: 25; background: #fff; pointer-events: none; opacity: 0; }
+.flash.go { animation: flash 0.8s ease-out; }
+@keyframes flash { 0% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .flash.go { animation: none; } }
 
 .toast {
   position: fixed;

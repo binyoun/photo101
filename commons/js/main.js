@@ -1,12 +1,15 @@
-// The Photo 101 Commons: an optional, casual place to drop into. Walk the
-// plaza, find this week's photo hunt items, check what is due, book a
-// consultation, and see who else is around. Nothing here is graded or
-// counted as attendance.
+// The Photo 101 Commons: an optional, casual place to drop into, and the
+// start of a small city for photographers. Walk the plaza, find this week's
+// photo hunt items, check what is due, book a consultation, see the show in
+// the Gallery, take a group photo in the Club Hall, and see who else is
+// around. Nothing here is graded or counted as attendance.
 
 import * as THREE from 'three';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { buildWorld, drawSign, makeItem, HIDING } from './world.js';
-import { makeAvatar, COLOURS } from './avatar.js';
+import { makeAvatar, COLOURS, POSES, CAMERAS, CAMERA_IDS } from './avatar.js';
+import { buildCity, SOUTH, HALL, STAGE, GALLERY, SHOP, CAMERA_NOTES, inside } from './city.js';
+import { pastShows, showDir } from './shows.js';
 import { connect, roomCode, peekCount } from './net.js';
 import { SEMESTER, WEEKS, weekNow, nextSession, nextDue, niceDate } from './semester.js';
 import { currentSet, stamps, stamp, totalStamps } from './hunt.js';
@@ -19,8 +22,10 @@ const R = 0.3;
 const HINT = COARSE
   ? 'Tap the ground to walk, drag to look around. Tap anything glowing or anyone to see more.'
   : 'Walk with WASD or click the ground. Drag to look around. E to look at what is in front of you.';
-const ACTS = { door: 'support', screen: 'support', art: 'gallery', desk: 'desk', assignment: 'kiosk', tool: 'tools', notice: 'notice' };
-const ACT_TEXT = { support: 'in the support room', gallery: 'in the gallery', desk: 'at the consultation desk', kiosk: 'reading an assignment', tools: 'in the tool corner', notice: 'at the notice board', hunt: 'on the photo hunt' };
+const CITY_HINT = 'Main Street runs south from the square: the Club Hall for group photos, the Gallery, and the Camera Shop.';
+const ACTS = { door: 'support', screen: 'support', art: 'gallery', desk: 'desk', assignment: 'kiosk', tool: 'tools', notice: 'notice', work: 'show', curator: 'show', lastphoto: 'club', shutter: 'club', camera: 'shop', counter: 'shop' };
+const ACT_TEXT = { support: 'in the support room', gallery: 'in the gallery', desk: 'at the consultation desk', kiosk: 'reading an assignment', tools: 'in the tool corner', notice: 'at the notice board', hunt: 'on the photo hunt', show: 'at the show', club: 'in the Club Hall', shop: 'in the camera shop' };
+const actText = (a) => (a.startsWith('pose-') ? 'in the Club Hall' : ACT_TEXT[a] || '');
 
 // ---- preferences, per viewer ---------------------------------------------------
 function loadPrefs() {
@@ -32,6 +37,8 @@ function loadPrefs() {
 }
 const prefs = loadPrefs();
 if (!COLOURS.includes(prefs.colour)) prefs.colour = COLOURS[Math.floor(Math.random() * COLOURS.length)];
+if (!CAMERA_IDS.includes(prefs.cam)) prefs.cam = 'dslr';
+const camLabel = (id) => (CAMERAS.find((c) => c.id === id) || CAMERAS[2]).label;
 function savePrefs() {
   try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (e) { /* blocked */ }
 }
@@ -55,9 +62,9 @@ const sun = new THREE.DirectionalLight('#fff4dc', 2.6);
 sun.position.set(18, 30, 16);
 sun.castShadow = true;
 sun.shadow.mapSize.set(COARSE ? 1024 : 2048, COARSE ? 1024 : 2048);
-Object.assign(sun.shadow.camera, { left: -30, right: 30, top: 16, bottom: -16, near: 1, far: 90 });
+Object.assign(sun.shadow.camera, { left: -26, right: 26, top: 22, bottom: -22, near: 1, far: 90 });
 sun.shadow.bias = -0.0006;
-scene.add(sun);
+scene.add(sun, sun.target); // the sun follows the walker so shadows reach the whole city
 
 await Promise.all([
   document.fonts.load('700 48px "Barlow Condensed"'),
@@ -65,6 +72,7 @@ await Promise.all([
   document.fonts.load('400 24px "Source Sans 3"'),
 ]).catch(() => {});
 const world = buildWorld(scene);
+const city = buildCity(scene, world);
 
 function resize() {
   renderer.setSize(innerWidth, innerHeight, false);
@@ -111,11 +119,11 @@ paintBoards();
 setInterval(paintBoards, 60000);
 
 // ---- the student ----------------------------------------------------------------------------
-const me = makeAvatar(prefs.colour);
+const me = makeAvatar(prefs.colour, { cam: prefs.cam });
 scene.add(me.root);
 const meTag = tag(prefs.name || '', 'tag me-tag', 2.05);
 me.root.add(meTag);
-const player = { x: 0, z: 7, r: Math.PI, speed: 0, path: [], pending: null, stuck: 0, activity: '' };
+const player = { x: 0, z: 7, r: Math.PI, speed: 0, path: [], pending: null, stuck: 0, activity: '', pose: '' };
 const cam = { yaw: 0, pitch: 0.55, dist: 8, x: 0, z: 7 };
 
 function tag(text, cls, y) {
@@ -161,14 +169,15 @@ const isHidden = (id, name) => hidden.has(id) || hiddenNames.has(name);
 
 function addPeer(p) {
   if ((net && p.id === net.id) || peers.has(p.id)) return;
-  const av = makeAvatar(COLOURS.includes(p.ink) ? p.ink : COLOURS[0]);
+  const av = makeAvatar(COLOURS.includes(p.ink) ? p.ink : COLOURS[0], { cam: p.cam });
   av.root.position.set(p.x || 0, 0, p.z || 0);
   scene.add(av.root);
   const t = tag(p.name, 'tag peer', 2.05);
   t.element.title = 'Hide or show this person';
   t.element.addEventListener('click', () => askHide(p.id));
   av.root.add(t);
-  peers.set(p.id, { av, tagEl: t.element, x: p.x || 0, z: p.z || 0, r: p.r || 0, tx: p.x || 0, tz: p.z || 0, tr: p.r || 0, a: '', name: p.name });
+  peers.set(p.id, { av, tagEl: t.element, x: p.x || 0, z: p.z || 0, r: p.r || 0, tx: p.x || 0, tz: p.z || 0, tr: p.r || 0, a: '', pose: '', name: p.name });
+  if (p.a) setPeerAct(peers.get(p.id), p.a);
   refreshCount();
 }
 function removePeer(id) {
@@ -185,6 +194,7 @@ function startNet() {
     room,
     name: prefs.name,
     ink: prefs.colour,
+    cam: prefs.cam,
     on: {
       status: (s) => { netStatus = s; refreshCount(); },
       welcome(m) {
@@ -202,8 +212,10 @@ function startNet() {
         const p = peers.get(m.id);
         if (!p) return;
         p.tx = m.x; p.tz = m.z; p.tr = m.r;
-        if (p.a !== m.a) { p.a = m.a; p.tagEl.dataset.act = ACT_TEXT[m.a] || ''; }
+        if (p.a !== m.a) setPeerAct(p, m.a);
       },
+      snap(m) { startTimer(m.name, m.id === net.id); },
+      look(m) { const p = peers.get(m.id); if (p) p.av.setCamera(m.cam); },
       chat(m) {
         if (isHidden(m.id, m.name)) return;
         const p = peers.get(m.id);
@@ -212,6 +224,12 @@ function startNet() {
       },
     },
   });
+}
+
+function setPeerAct(p, a) {
+  p.a = a;
+  p.pose = a.startsWith('pose-') ? a.slice(5) : '';
+  p.tagEl.dataset.act = actText(a);
 }
 
 let netStatus = 'solo';
@@ -376,7 +394,227 @@ function interact(it) {
       <p class="challenge"><b>Try this:</b> ${esc(h.challenge)}</p>
       ${found === set.items.length ? '<p class="complete">Set complete. A new set appears when the course moves on.</p>' : ''}`, 'hunt');
     if (fresh && found === set.items.length) toast(`All ${set.items.length} found. The ${set.title.toLowerCase()} set is complete.`);
+  } else if (it.kind === 'work') {
+    const w = it.data;
+    const show = city.show;
+    openPanel(`
+      <img class="art" src="${esc(showDir(show) + w.file)}" alt="${esc(w.title)} by ${esc(w.artist)}">
+      <span class="label">${esc(show.title)} · curated by ${esc(show.curator)}</span>
+      <h2>${esc(w.title)}</h2>
+      <p>${esc(w.artist)}${w.semester ? ` · ${esc(w.semester)}` : ''}</p>
+      ${w.caption ? `<p>${esc(w.caption)}</p>` : ''}
+      <p class="muted">Try the three questions: what do you see, how was it made, and what does it make you feel?</p>`, act);
+  } else if (it.kind === 'curator') {
+    const show = it.data;
+    const past = pastShows(now());
+    openPanel(show ? `
+      <span class="label">Now showing · curated by ${esc(show.curator)}</span>
+      <h2>${esc(show.title)}</h2>
+      <p>${esc(show.note)}</p>
+      <p class="muted">${show.works.length} works. Walk up to any of them to see it larger.</p>
+      ${past.length ? `<p><b>Past shows:</b> ${past.map((p) => `${esc(p.title)} (${esc(p.curator)})`).join(', ')}</p>` : ''}` : `
+      <span class="label">The Gallery</span>
+      <h2>The next show is being hung</h2>
+      <p>For each show the teaching team picks work by Photo 101 students and hangs it here. There is nothing to submit: keep shooting, and share your best work in the support sessions and on the Miro board.</p>`, act);
+  } else if (it.kind === 'shutter') {
+    if (timer) { toast('The timer is already running. Get in the frame!'); return; }
+    if (net && net.online) net.snap();
+    else startTimer(prefs.name, true);
+  } else if (it.kind === 'lastphoto') {
+    openPanel(lastPrint ? `
+      <span class="label">Club Hall · this visit</span>
+      <h2>Your last group photo</h2>
+      <img class="art" src="${lastPrint}" alt="The last group photo taken in the Club Hall">
+      <div class="row"><a class="btn primary" href="${lastPrint}" download="${photoName()}">Save photo</a></div>` : `
+      <span class="label">Club Hall</span>
+      <h2>No group photo yet</h2>
+      <p>Set the timer on the studio camera, then get onto the cream paper with whoever is around. The photo stays in your browser; nothing is uploaded.</p>`, act);
+  } else if (it.kind === 'signpost') {
+    openPanel(`
+      <span class="label">Signpost</span>
+      <h2>Where to?</h2>
+      <div class="row go">
+        <button class="btn primary" data-go="-6.2,21">Club Hall</button>
+        <button class="btn primary" data-go="6.2,21">Gallery</button>
+        <button class="btn primary" data-go="3.8,38.1">Camera Shop</button>
+        <button class="btn" data-go="0,-5.3">Consultation desk</button>
+        <button class="btn" data-go="-11.9,0">Support room</button>
+        <button class="btn" data-go="0,3.4">Notice board</button>
+      </div>`);
+  } else if (it.kind === 'camera') {
+    const c = it.data;
+    const mine = prefs.cam === c.id;
+    openPanel(`
+      <span class="label">Camera Shop</span>
+      <h2>${esc(c.label)}</h2>
+      <p>${esc(CAMERA_NOTES[c.id])}</p>
+      <p class="muted">Everything here is free. Pick the kind closest to what you really shoot with, so others can see it.</p>
+      <div class="row">${mine ? '<span class="btn">You carry this one</span>' : `<button class="btn primary" data-cam="${esc(c.id)}">This is my camera</button>`}${ext('../camera-checker.html', 'Camera Checker')}</div>`, act);
+  } else if (it.kind === 'counter') {
+    openPanel(`
+      <span class="label">Camera Shop · the counter</span>
+      <h2>Which camera do you have?</h2>
+      <p>You are carrying a <b>${esc(camLabel(prefs.cam))}</b>. Pick the kind you shoot with; it becomes your head here.</p>
+      <div class="row">${CAMERAS.map((c) => `<button class="btn${c.id === prefs.cam ? ' primary' : ''}" data-cam="${esc(c.id)}">${esc(c.label)}</button>`).join('')}</div>
+      <p class="muted">Not sure your camera has the manual controls the course needs? The Camera Checker will tell you.</p>
+      <div class="row">${ext('../camera-checker.html', 'Open the Camera Checker', true)}</div>`, act);
+  } else if (it.kind === 'lot') {
+    openPanel(`
+      <span class="label">Coming soon</span>
+      <h2>An empty lot</h2>
+      <p>This city is just getting started. Something for photographers will be built here.</p>`);
   }
+}
+
+panel.addEventListener('click', (e) => {
+  const pick = e.target.closest('[data-cam]');
+  if (pick) { chooseCamera(pick.dataset.cam); closePanel(); return; }
+  const go = e.target.closest('[data-go]');
+  if (!go) return;
+  const [x, z] = go.dataset.go.split(',').map(Number);
+  closePanel();
+  walkTo(x, z, null);
+});
+
+function chooseCamera(id) {
+  if (!CAMERA_IDS.includes(id)) return;
+  prefs.cam = id;
+  savePrefs();
+  me.setCamera(id);
+  if (net) net.look(id);
+  camButtons.forEach((b) => b.classList.toggle('on', b.dataset.cam === id));
+  if (entered) toast(`You now carry a ${camLabel(id).toLowerCase()} camera.`);
+}
+
+// ---- the Club Hall: a shared self-timer, and the photo each browser takes --------------------------
+let timer = null;
+let lastPrint = '';
+const countEl = $('.countdown');
+const inHall = () => inside(HALL, player.x, player.z);
+const onStage = () => inside(STAGE, player.x, player.z);
+const photoName = () => `photo101-club-${new Date().toISOString().slice(0, 10)}.png`;
+
+function startTimer(name, mine) {
+  if (timer) return;
+  const ends = performance.now() + 6000;
+  timer = { ends };
+  city.club.tally(true);
+  if (mine) {
+    // whoever sets the timer runs round to join the photo
+    closePanel();
+    const spots = [[-17.4, 21], [-17.4, 19.4], [-17.4, 22.6], [-18.8, 20.2], [-18.8, 21.8], [-16, 20.2], [-16, 21.8]];
+    const [x, z] = spots[Math.floor(Math.random() * spots.length)];
+    walkTo(x, z, null);
+    feed('Timer set. Six seconds: get on the cream paper!', 'sys');
+  } else if (inHall()) {
+    feed(`${name} set the timer. Get in the frame!`, 'sys');
+  } else {
+    feed(`${name} is taking a group photo in the Club Hall.`, 'sys');
+  }
+}
+
+function tickTimer() {
+  if (!timer) return;
+  const left = (timer.ends - performance.now()) / 1000;
+  const here = inHall();
+  countEl.hidden = !here || left <= 0;
+  if (here && left > 0) countEl.textContent = Math.ceil(left);
+  city.club.tally(Math.ceil(left * 2) % 2 === 0 || left < 1.5);
+  // with the shutter about to go, anyone standing on the paper turns to the camera
+  if (left < 1.8 && onStage() && !player.path.length && player.speed < 0.05) player.r = Math.PI / 2;
+  if (left > 0) return;
+  timer = null;
+  city.club.tally(false);
+  countEl.hidden = true;
+  if (here) takePhoto();
+}
+
+function takePhoto() {
+  const W = 1600;
+  const Hh = 800;
+  const lens = city.club.lensCam;
+  // render through the studio camera at full size, then put the main view back
+  const ratio = renderer.getPixelRatio();
+  renderer.setPixelRatio(1);
+  renderer.setSize(W, Hh, false);
+  renderer.render(scene, lens);
+  const shot = document.createElement('canvas');
+  shot.width = W;
+  shot.height = Hh;
+  shot.getContext('2d').drawImage(canvas, 0, 0);
+  renderer.setPixelRatio(ratio);
+  resize();
+  renderer.render(scene, camera);
+
+  // who is in the picture, with a name under each
+  const people = [{ name: prefs.name, x: player.x, z: player.z }];
+  for (const [id, p] of peers) if (!isHidden(id, p.name)) people.push({ name: p.name, x: p.x, z: p.z });
+  const v = new THREE.Vector3();
+  const inFrame = [];
+  for (const p of people) {
+    if (!inside(HALL, p.x, p.z) || p.x > lens.position.x - 0.3) continue;
+    v.set(p.x, 0, p.z).project(lens);
+    if (Math.abs(v.x) > 0.98 || v.y < -1.2 || v.z > 1) continue;
+    inFrame.push({ ...p, px: (v.x + 1) / 2 * W, py: Math.min(Hh - 18, (1 - v.y) / 2 * Hh + 26) });
+  }
+  inFrame.sort((a, b) => a.px - b.px);
+
+  const M = 50;
+  const print = document.createElement('canvas');
+  print.width = W + M * 2;
+  print.height = Hh + M + 150;
+  const ctx = print.getContext('2d');
+  ctx.fillStyle = '#f7f5f0';
+  ctx.fillRect(0, 0, print.width, print.height);
+  ctx.drawImage(shot, M, M);
+  ctx.textAlign = 'center';
+  ctx.font = '700 30px "Barlow Condensed", sans-serif';
+  for (const p of inFrame) {
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+    ctx.strokeText(p.name, M + p.px, M + p.py);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(p.name, M + p.px, M + p.py);
+  }
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#e60028';
+  ctx.font = '700 54px "Barlow Condensed", sans-serif';
+  ctx.fillText('PHOTO 101 CLUB HALL', M, Hh + M + 70);
+  ctx.fillStyle = '#555';
+  ctx.font = '400 26px "JetBrains Mono", monospace';
+  ctx.fillText(inFrame.length ? inFrame.map((p) => p.name).join(' · ') : 'Nobody made it onto the paper this time', M, Hh + M + 115);
+  ctx.textAlign = 'right';
+  ctx.fillText(new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' }), W + M, Hh + M + 70);
+
+  lastPrint = print.toDataURL('image/png');
+  city.club.hang(print);
+  const flash = $('.flash');
+  flash.hidden = false;
+  flash.classList.remove('go');
+  void flash.offsetWidth;
+  flash.classList.add('go');
+  setTimeout(() => { flash.hidden = true; }, 900);
+  setTimeout(() => interact(world.interactables.find((i) => i.kind === 'lastphoto')), 700);
+}
+
+// ---- poses, for the photo -------------------------------------------------------------------------------------------
+const poseBar = $('.poses');
+POSES.forEach((pose, i) => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'pose';
+  b.dataset.pose = pose;
+  b.innerHTML = `<kbd>${i + 1}</kbd>${pose}`;
+  b.addEventListener('click', () => setPose(player.pose === pose ? '' : pose));
+  poseBar.append(b);
+});
+function setPose(pose) {
+  player.pose = pose;
+  player.path = [];
+  player.pending = null;
+  // facing the camera whenever you strike a pose on the paper
+  if (pose && onStage()) player.r = Math.PI / 2;
+  poseBar.querySelectorAll('.pose').forEach((b) => b.classList.toggle('on', b.dataset.pose === pose));
 }
 
 $('.stamp-btn').addEventListener('click', () => {
@@ -399,6 +637,7 @@ addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
   if ((k === 'e' || k === 'enter') && nearest) { interact(nearest); return; }
   if (k === 't' || k === 'enter') { e.preventDefault(); $('.chat input').focus(); return; }
+  if (/^[1-5]$/.test(k) && inHall()) { const p = POSES[+k - 1]; setPose(player.pose === p ? '' : p); return; }
   keys.add(k);
   if (k.startsWith('arrow')) e.preventDefault();
 });
@@ -452,7 +691,7 @@ function isChild(o, parent) {
 }
 
 // ---- walking: A* over a quarter-metre grid, pulled taut -----------------------------------------------------------
-const GRID = { x0: -24, z0: -9, cell: 0.25, w: 192, h: 72 };
+const GRID = { x0: -24, z0: -9, cell: 0.25, w: 192, h: 216 };
 let grid = null;
 let gridDoor = null;
 function blocked(x, z, rad = R) {
@@ -461,7 +700,9 @@ function blocked(x, z, rad = R) {
     const cz = Math.max(z0, Math.min(z, z1));
     if ((x - cx) ** 2 + (z - cz) ** 2 < rad * rad) return true;
   }
-  return x < -23.7 || x > 23.7 || z < -8.7 || z > 8.7;
+  // the square, then the city to the south of it
+  const square = x >= -23.7 && x <= 23.7 && z >= -8.7 && z <= 8.7;
+  return !square && !inside(SOUTH, x, z);
 }
 function buildGrid() {
   grid = new Uint8Array(GRID.w * GRID.h);
@@ -572,7 +813,7 @@ function walkTo(x, z, pending) {
   player.pending = path ? pending : null;
   player.stuck = 0;
   // a closed door: say why instead of walking into it
-  if (!path && pending == null && x < -13) toast('The support room opens on session days.');
+  if (!path && pending == null && x < -13 && z < 8) toast('The support room opens on session days.');
 }
 
 function step(dt) {
@@ -581,6 +822,7 @@ function step(dt) {
   const fw = (keys.has('w') || keys.has('arrowup')) - (keys.has('s') || keys.has('arrowdown'));
   const rt = (keys.has('d') || keys.has('arrowright')) - (keys.has('a') || keys.has('arrowleft'));
   const run = keys.has('shift') ? 1.7 : 1;
+  if ((fw || rt || player.path.length) && player.pose) setPose('');
   if (fw || rt) {
     player.path = [];
     player.pending = null;
@@ -668,6 +910,16 @@ COLOURS.forEach((c) => {
   });
   swatches.append(b);
 });
+const camButtons = CAMERAS.map((c) => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'cam' + (c.id === prefs.cam ? ' on' : '');
+  b.dataset.cam = c.id;
+  b.textContent = c.label;
+  b.addEventListener('click', () => chooseCamera(c.id));
+  gate.querySelector('.cams').append(b);
+  return b;
+});
 peekCount(room).then((n) => {
   if (n == null) return;
   gate.querySelector('.entry-count').textContent =
@@ -687,6 +939,7 @@ gate.querySelector('form').addEventListener('submit', (e) => {
   startNet();
   refreshCount();
   feed(HINT, 'sys');
+  feed(CITY_HINT, 'sys');
   const found = set.items.filter((i) => stamps()[i.id]).length;
   if (found < set.items.length) feed(`Photo hunt: ${set.items.length - found} things are hidden around here this week.`, 'sys');
 });
@@ -703,9 +956,12 @@ function frame() {
   else player.speed = 0;
   me.root.position.set(player.x, 0, player.z);
   me.root.rotation.y = player.r;
-  me.animate(dt, player.speed, t);
+  me.animate(dt, player.speed, t, player.pose);
   if (entered) findNearest();
+  tickTimer();
+  poseBar.hidden = !entered || !inHall();
   world.door.animate(dt);
+  if (!REDUCED) for (const d of city.displays) d.rotation.y += dt * 0.6;
   for (const it of items) {
     if (!it.mesh.visible) continue;
     it.mesh.rotation.y += dt * (REDUCED ? 0 : 1.2);
@@ -722,7 +978,7 @@ function frame() {
     p.r += d * k;
     p.av.root.position.set(p.x, 0, p.z);
     p.av.root.rotation.y = p.r;
-    p.av.animate(dt, Math.hypot(p.x - ox, p.z - oz) / dt, t);
+    p.av.animate(dt, Math.hypot(p.x - ox, p.z - oz) / dt, t, p.pose);
   }
   if (!entered && !REDUCED) cam.yaw += dt * 0.05;
   const k = 1 - Math.exp(-dt * 6);
@@ -731,16 +987,19 @@ function frame() {
   const cp = Math.cos(cam.pitch) * cam.dist;
   camera.position.set(cam.x + Math.sin(cam.yaw) * cp, 1.2 + Math.sin(cam.pitch) * cam.dist, cam.z + Math.cos(cam.yaw) * cp);
   camera.lookAt(look.set(cam.x, 1.2, cam.z));
+  sun.position.set(cam.x + 18, 30, cam.z + 16);
+  sun.target.position.set(cam.x, 0, cam.z);
   if (net && entered) {
     sendTimer += dt;
-    if (sendTimer > 0.25) { sendTimer = 0; net.pos(player.x, player.z, player.r, player.activity); }
+    const act = player.pose ? `pose-${player.pose}` : player.activity || (inHall() ? 'club' : inside(GALLERY, player.x, player.z) ? 'show' : inside(SHOP, player.x, player.z) ? 'shop' : '');
+    if (sendTimer > 0.25) { sendTimer = 0; net.pos(player.x, player.z, player.r, act); }
   }
   renderer.render(scene, camera);
   labels.render(scene, camera);
 }
 
 if (new URLSearchParams(location.search).has('debug')) {
-  window.__commons = { player, world, walkTo, peers, items, interact };
+  window.__commons = { player, cam, world, city, walkTo, peers, items, interact, startTimer, setPose };
 }
 document.body.classList.add('ready');
 frame();

@@ -1,6 +1,7 @@
 // Presence: one WebSocket to a Cloudflare Durable Object per room. Only
 // first names, shirt colours, where people stand and short chat lines
-// travel; chat is never stored. Nothing here is an attendance record.
+// travel, plus the Club Hall's group-photo timer; chat is never stored and
+// group photos never leave the browser. Nothing here is an attendance record.
 
 import { SEMESTER } from './semester.js';
 
@@ -29,7 +30,7 @@ export async function peekCount(room) {
   }
 }
 
-export function connect({ room, name, ink, on }) {
+export function connect({ room, name, ink, cam, on }) {
   const base = serverUrl();
   let ws = null;
   let closed = false;
@@ -48,6 +49,9 @@ export function connect({ room, name, ink, on }) {
       send(msg);
     },
     chat(text) { send({ t: 'chat', text }); },
+    snap() { send({ t: 'snap' }); }, // the Club Hall self-timer
+    cam,
+    look(c) { api.cam = c; send({ t: 'look', cam: c }); }, // a camera from the shop
     close() { closed = true; if (ws) ws.close(); },
   };
 
@@ -66,7 +70,7 @@ export function connect({ room, name, ink, on }) {
     ws.addEventListener('open', () => {
       tries = 0;
       lastPos = '';
-      send({ t: 'hello', name, ink });
+      send({ t: 'hello', name, ink, cam: api.cam });
     });
     ws.addEventListener('message', (e) => {
       let m;

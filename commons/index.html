@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Photo 101 Commons</title>
-<meta name="description" content="An optional, casual 3D space for Photography 101 students: find the weekly photo hunt, check what is due, book a consultation, and see who else is around.">
+<meta name="description" content="An optional, casual 3D city for Photography 101 students: a curated gallery of student work, a club hall for group photos, the weekly photo hunt, what is due, and consultations.">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="../favicon.png" type="image/png">
@@ -29,8 +29,9 @@
   <div class="entry-card">
     <span class="label">Photography 101</span>
     <h1>The Commons</h1>
-    <p class="lede">A place to drop into between modules. Find this week's photo hunt, check
-    what is due, book a consultation, and see who else is around.</p>
+    <p class="lede">A small city for Photo 101, to drop into between modules. See the show in
+    the Gallery, meet up in the Club Hall for a group photo, pick your camera at the Camera
+    Shop, find this week's photo hunt, check what is due, and book a consultation.</p>
     <form autocomplete="off">
       <label class="field">
         <span>Your first name or a nickname</span>
@@ -40,11 +41,15 @@
         <span>Your colour</span>
         <div class="swatches"></div>
       </div>
+      <div class="field">
+        <span>Your camera: pick the kind you shoot with</span>
+        <div class="cams"></div>
+      </div>
       <button class="btn primary" type="submit">Walk in</button>
     </form>
     <p class="entry-count"></p>
     <p class="small">Optional and just for fun: nothing here is graded or counted as attendance.
-    Others see your name, your colour and where you stand. Chat is not kept.
+    Others see your name, your colour, your kind of camera and where you stand. Chat is not kept.
     Everything official is on <a href="https://rmit.instructure.com/courses/174712" target="_blank" rel="noopener">Canvas</a>.</p>
     <p class="small"><a href="../">Back to the Photo 101 hub</a></p>
     <p class="nogl">This browser cannot draw the Commons (it needs WebGL). Everything is also on
@@ -71,7 +76,11 @@
     </div>
   </div>
   <button class="prompt" hidden><kbd>E</kbd><span></span></button>
+  <div class="poses" role="group" aria-label="Pose for the group photo" hidden></div>
 </div>
+
+<div class="countdown" aria-live="assertive" hidden></div>
+<div class="flash" hidden></div>
 
 <div class="toast" role="status" hidden></div>
 
