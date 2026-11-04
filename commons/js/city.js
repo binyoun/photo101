@@ -3,18 +3,22 @@
 // and take a group photo together, and the Gallery on the east side, which
 // hangs a show of work picked by the teaching team. Further down, the Camera
 // Shop, where you pick the camera you carry as your head, and one lot
-// waiting for whatever the city needs next.
+// waiting for whatever the city needs next. Main Street ends at the Meeting
+// Point: maps of Saigon and Hanoi on the ground where photo walk plans stand
+// as flags, an Online island, a campfire to sit around, and an ideas wall.
 
 import * as THREE from 'three';
 import { mat, canvasTexture, drawSign } from './world.js';
 import { currentShow, showDir, SLOTS } from './shows.js';
+import { PLACES, TAGS } from './walks.js';
 import { CAMERAS, cameraHead } from './avatar.js';
 
 const RED = '#e60028';
 const INK = '#141414';
 
 // Where things are, for main.js: walkable ground and the two buildings
-export const SOUTH = { x0: -22.2, z0: 8.5, x1: 22.2, z1: 44.5 };
+export const SOUTH = { x0: -22.2, z0: 8.5, x1: 22.2, z1: 58.2 };
+export const FIRE = { x: 16.4, z: 54.6 };
 export const HALL = { x0: -21, z0: 13, x1: -5, z1: 29 };
 export const STAGE = { x0: -20.3, z0: 16.6, x1: -14.5, z1: 25.4 };
 export const GALLERY = { x0: 5, z0: 13, x1: 21, z1: 29 };
@@ -78,8 +82,8 @@ export function buildCity(scene, { colliders, interactables, ground }) {
     }
   });
   paving.texture.wrapS = paving.texture.wrapT = THREE.RepeatWrapping;
-  paving.texture.repeat.set(44 / 4, 36 / 4);
-  floor(44.4, 36, '', 0, 26.7, 0.005, paving.texture);
+  paving.texture.repeat.set(44 / 4, 50 / 4);
+  floor(44.4, 50, '', 0, 33.7, 0.005, paving.texture);
   const street = canvasTexture(64, 256, (ctx, w, h) => {
     ctx.fillStyle = '#4a4a4d';
     ctx.fillRect(0, 0, w, h);
@@ -92,9 +96,9 @@ export function buildCity(scene, { colliders, interactables, ground }) {
 
   // hedges around the city edge (the square's south hedge is the north edge)
   const hedge = (x0, z0, x1, z1) => box(Math.max(0.6, x1 - x0), 0.8, Math.max(0.6, z1 - z0), '#4f8a3a', (x0 + x1) / 2, 0.4, (z0 + z1) / 2, scene, { collide: true });
-  hedge(-23.1, 9.3, -22.5, 45.1);
-  hedge(22.5, 9.3, 23.1, 45.1);
-  hedge(-23.1, 44.8, 23.1, 45.4);
+  hedge(-23.1, 9.3, -22.5, 59.1);
+  hedge(22.5, 9.3, 23.1, 59.1);
+  hedge(-23.1, 58.8, 23.1, 59.4);
 
   // street lamps and a few trees
   const lamp = (x, z) => {
@@ -461,8 +465,257 @@ export function buildCity(scene, { colliders, interactables, ground }) {
   colliders.push([18.85, 36.55, 19.95, 39.65]);
   interactables.push({ kind: 'counter', id: 'counter', label: 'Ask at the counter', stand: [17.9, 38.1], face: -Math.PI / 2, mesh: counter });
 
+
+  // ---- the Meeting Point, at the end of Main Street ---------------------------------------------
+  // the gateway
+  for (const x of [-3.4, 3.4]) box(0.5, 3.6, 0.5, INK, x, 1.8, 45.3, scene, { collide: true });
+  sign(7.3, 0.9, [['MEETING POINT', 72], ['Plan photo walks together', 30, 'mono']], { accent: '#2fb36d' }, 0, 3.3, 45.3, Math.PI, [1024, 128]);
+  sign(7.3, 0.9, [['MEETING POINT', 72], ['Plan photo walks together', 30, 'mono']], { accent: '#2fb36d' }, 0, 3.3, 45.32, 0, [1024, 128]);
+  box(7.4, 0.95, 0.04, INK, 0, 3.3, 45.31);
+
+  // the two maps: schematic district tiles, not to scale; column 3 is the river
+  const TW = 3.0;
+  const TD = 2.3;
+  const GAP = 0.12;
+  const RIVER = 1.2;
+  const colX = (x0, c) => (c < 3 ? x0 + c * (TW + GAP) : c === 3 ? x0 + 3 * (TW + GAP) : x0 + 3 * (TW + GAP) + RIVER + GAP);
+  const tiles = [];
+  const tile = (city, label, x0, z0, w, d, fill, ink, extra, turned = false) => {
+    const tex = canvasTexture(256, 196, (ctx, cw, ch) => {
+      ctx.fillStyle = fill;
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(3, 3, cw - 6, ch - 6);
+      if (extra) extra(ctx, cw, ch);
+      if (!label) return;
+      ctx.fillStyle = ink;
+      ctx.textAlign = 'center';
+      const [main, sub] = label.split(' · ');
+      ctx.font = `700 ${main.length > 11 ? 34 : 42}px "Barlow Condensed", sans-serif`;
+      ctx.fillText(main.toUpperCase(), cw / 2, sub ? ch / 2 - 4 : ch / 2 + 14);
+      if (sub) {
+        ctx.font = '600 26px "Source Sans 3", sans-serif';
+        ctx.fillText(sub, cw / 2, ch / 2 + 30);
+      }
+    });
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, 0.06, d), [mat(fill), mat(fill), new THREE.MeshStandardMaterial({ map: tex.texture, roughness: 0.9 }), mat(fill), mat(fill), mat(fill)]);
+    m.position.set(x0 + w / 2, 0.03, z0 + d / 2);
+    if (turned) m.rotation.y = Math.PI; // labels read upright for people walking in from Main Street
+    m.receiveShadow = true;
+    ground.add(m);
+    if (label) tiles.push({ city, area: label, x0, z0, x1: x0 + w, z1: z0 + d, cx: x0 + w / 2, cz: z0 + d / 2 });
+  };
+  const water = (ctx, w, h) => {
+    ctx.fillStyle = '#5fb4e6';
+    ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 4;
+    for (let y = 24; y < h; y += 34) { ctx.beginPath(); ctx.moveTo(10, y); ctx.quadraticCurveTo(w / 2, y - 14, w - 10, y); ctx.stroke(); }
+  };
+  const rmit = (ctx, w) => { ctx.fillStyle = RED; ctx.beginPath(); ctx.arc(w - 30, 30, 14, 0, Math.PI * 2); ctx.fill(); };
+  // Visitors arrive from the north facing south, so each map is turned
+  // round: north at the far end, east on their right, as a map in the hand.
+  const buildMap = (city, x0, z0, rows, fillCol, title, lakes = []) => {
+    const W = colX(x0, 4) + TW - x0;
+    const D = rows * (TD + GAP) - GAP;
+    const put = (label, c, r, w, fill, extra) => {
+      const tx = c === 3 ? colX(x0, 3) : colX(x0, c);
+      const tz = z0 + r * (TD + GAP);
+      tile(city, label, 2 * x0 + W - (tx + w), 2 * z0 + D - (tz + TD), w, TD, fill, INK, extra, true);
+    };
+    for (const [label, c, r] of PLACES[city]) put(label, c, r, TW, label === 'Somewhere else' ? '#e8e3d8' : fillCol, /RMIT/.test(label) ? rmit : null);
+    for (let r = 0; r < rows; r++) put('', 3, r, RIVER, '#5fb4e6', water);
+    for (const [c, r] of lakes) put('', c, r, TW, '#5fb4e6', water);
+    sign(4.2, 0.62, [[title, 46], ['Schematic, not to scale', 22, 'mono']], { accent: '#2fb36d' }, x0 + 6.3, 0.75, z0 - 0.35, Math.PI, [640, 96]);
+    box(4.3, 0.7, 0.05, INK, x0 + 6.3, 0.75, z0 - 0.33);
+  };
+  const SG = { x0: -20.6, z0: 47.2 };
+  const HN = { x0: -1.6, z0: 47.2 };
+  buildMap('saigon', SG.x0, SG.z0, 4, '#f2d9b1', 'SAIGON');
+  buildMap('hanoi', HN.x0, HN.z0, 3, '#cfe3d6', 'HANOI', [[0, 0]]); // West Lake, beside Tay Ho
+  // the Online island
+  const island = new THREE.Mesh(new THREE.CylinderGeometry(1.9, 2.1, 0.12, 24), mat('#c9b8ff'));
+  island.position.set(15.6, 0.06, 48.6);
+  island.receiveShadow = true;
+  ground.add(island);
+  const islandTex = canvasTexture(256, 256, (ctx, w, h) => {
+    ctx.fillStyle = '#c9b8ff';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = INK;
+    ctx.textAlign = 'center';
+    ctx.font = '700 48px "Barlow Condensed", sans-serif';
+    ctx.fillText('ONLINE', w / 2, h / 2);
+    ctx.font = '600 24px "Source Sans 3", sans-serif';
+    ctx.fillText('same theme, same week', w / 2, h / 2 + 34);
+  });
+  const islandTop = new THREE.Mesh(new THREE.CircleGeometry(1.85, 24), new THREE.MeshStandardMaterial({ map: islandTex.texture }));
+  islandTop.rotation.x = -Math.PI / 2;
+  islandTop.position.set(15.6, 0.125, 48.6);
+  ground.add(islandTop);
+  tiles.push({ city: 'online', area: 'Online', x0: 13.9, z0: 46.9, x1: 17.3, z1: 50.3, cx: 15.6, cz: 48.6 });
+
+  // the campfire, with logs to sit on
+  const fire = new THREE.Group();
+  fire.position.set(FIRE.x, 0, FIRE.z);
+  scene.add(fire);
+  for (let i = 0; i < 10; i++) {
+    const a = (i / 10) * Math.PI * 2;
+    box(0.32, 0.22, 0.32, '#8d8a85', Math.sin(a) * 0.75, 0.11, Math.cos(a) * 0.75, fire);
+  }
+  const flames = [['#ff6a00', 0.5, 0.45], ['#ffb300', 0.34, 0.75], ['#ffe08a', 0.2, 1.0]].map(([c, s, y]) => {
+    const f = box(s, s, s, '', 0, y, 0, fire, { shadow: false, m: mat(c, { emissive: c, emissiveIntensity: 1.4 }) });
+    return f;
+  });
+  const fireLight = new THREE.PointLight(0xff9a3c, 3, 9, 1.6);
+  fireLight.position.y = 1.0;
+  fire.add(fireLight);
+  colliders.push([FIRE.x - 0.85, FIRE.z - 0.85, FIRE.x + 0.85, FIRE.z + 0.85]);
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2 + 0.3;
+    const lx = FIRE.x + Math.sin(a) * 2.45;
+    const lz = FIRE.z + Math.cos(a) * 2.45;
+    const log = box(1.3, 0.34, 0.42, '#7a5232', lx, 0.17, lz);
+    log.rotation.y = a + Math.PI / 2;
+    const sx = FIRE.x + Math.sin(a) * 2.15;
+    const sz = FIRE.z + Math.cos(a) * 2.15;
+    interactables.push({ kind: 'log', id: `log-${i}`, label: 'Sit by the fire', stand: [sx, sz], face: a, mesh: log });
+  }
+
+  // the ideas wall
+  const ideas = canvasTexture(1024, 320, () => {});
+  const wallG = new THREE.Group();
+  wallG.position.set(5, 1.5, 57.7);
+  wallG.rotation.y = Math.PI;
+  scene.add(wallG);
+  box(7.2, 2.3, 0.1, '#2fb36d', 0, 0, 0, wallG);
+  const ideasFace = new THREE.Mesh(new THREE.PlaneGeometry(7, 2.1), new THREE.MeshStandardMaterial({ map: ideas.texture }));
+  ideasFace.position.z = 0.06;
+  wallG.add(ideasFace);
+  for (const x of [-3.2, 3.2]) box(0.12, 1.5, 0.12, INK, x, -1.0, 0, wallG);
+  colliders.push([1.3, 57.55, 8.7, 57.85]);
+  interactables.push({ kind: 'ideas', id: 'ideas', label: 'Ideas wall: read and add a note', stand: [5, 56.4], face: Math.PI, mesh: wallG });
+  const paintIdeas = (notes) => ideas.redraw((ctx, w, h) => {
+    ctx.fillStyle = '#e9f5ec';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = INK;
+    ctx.font = '700 46px "Barlow Condensed", sans-serif';
+    ctx.fillText('IDEAS WALL', 22, 50);
+    ctx.font = '400 22px "JetBrains Mono", monospace';
+    ctx.fillText(notes.length ? 'Thoughts and places to shoot. Walk up and add yours.' : 'Empty for now. Walk up and add the first note.', 260, 46);
+    notes.slice(0, 7).forEach((n, i) => {
+      ctx.save();
+      ctx.translate(22 + i * 142 + 66, 190);
+      ctx.rotate(((i % 3) - 1) * 0.04);
+      ctx.fillStyle = ['#fff3a8', '#ffd0d8', '#cfeaff', '#d8f5c8'][i % 4];
+      ctx.fillRect(-66, -100, 132, 200);
+      ctx.fillStyle = INK;
+      ctx.font = '600 19px "Source Sans 3", sans-serif';
+      const words = n.text.split(' ');
+      let line = '';
+      let y = -72;
+      for (const word of words) {
+        const t = line ? line + ' ' + word : word;
+        if (ctx.measureText(t).width > 116 && line) { ctx.fillText(line, -58, y); line = word; y += 22; } else line = t;
+        if (y > 50) break;
+      }
+      if (y <= 50) ctx.fillText(line, -58, y);
+      ctx.fillStyle = '#555';
+      ctx.font = '700 18px "Barlow Condensed", sans-serif';
+      ctx.fillText(n.name.slice(0, 14), -58, 88);
+      ctx.restore();
+    });
+  });
+  paintIdeas([]);
+
+  // plan flags: one per photo walk plan, on its district tile
+  const flags = new Map();
+  const tagName = (t) => (TAGS.find((x) => x[0] === t) || [t, t])[1];
+  function tileFor(c) {
+    return tiles.find((t) => t.city === c.city && t.area === c.area)
+      || tiles.find((t) => t.city === c.city && (t.area === 'Somewhere else' || t.city === 'online'))
+      || tiles[0];
+  }
+  function makeFlag(c) {
+    const g = new THREE.Group();
+    box(0.07, 2.3, 0.07, '#ececec', 0, 1.15, 0, g);
+    box(0.9, 0.55, 0.04, '', 0.48, 1.98, 0, g, { m: mat(c.ink || RED) });
+    box(0.5, 0.06, 0.5, INK, 0, 0.03, 0, g);
+    const label = canvasTexture(320, 112, () => {});
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: label.texture, depthWrite: false }));
+    sprite.scale.set(1.9, 0.665, 1);
+    sprite.position.y = 2.75;
+    g.add(sprite);
+    scene.add(g);
+    const f = { g, label, card: c, it: null };
+    paintFlag(f);
+    return f;
+  }
+  function paintFlag(f) {
+    const c = f.card;
+    f.label.redraw((ctx, w, h) => {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = 'rgba(255,255,255,0.94)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = c.ink || RED;
+      ctx.fillRect(0, 0, 8, h);
+      ctx.fillStyle = INK;
+      ctx.font = '700 34px "Barlow Condensed", sans-serif';
+      ctx.fillText(`${c.name.slice(0, 12)}${c.joined.length ? ` +${c.joined.length}` : ''}`, 20, 40);
+      ctx.font = '600 24px "Source Sans 3", sans-serif';
+      ctx.fillText(c.tags.map(tagName).join(', ').slice(0, 24), 20, 72);
+      ctx.fillStyle = '#555';
+      ctx.font = '400 20px "JetBrains Mono", monospace';
+      ctx.fillText((c.when || c.date || '').slice(0, 24), 20, 100);
+    });
+  }
+  function setFlags(cards) {
+    const ids = new Set(cards.map((c) => c.id));
+    for (const [id, f] of flags) {
+      if (ids.has(id)) continue;
+      scene.remove(f.g);
+      const k = interactables.indexOf(f.it);
+      if (k >= 0) interactables.splice(k, 1);
+      flags.delete(id);
+    }
+    const perTile = new Map();
+    for (const c of [...cards].reverse()) {
+      const t = tileFor(c);
+      const n = perTile.get(t) || 0;
+      perTile.set(t, n + 1);
+      let f = flags.get(c.id);
+      if (!f) {
+        f = makeFlag(c);
+        flags.set(c.id, f);
+        f.it = { kind: 'flag', id: `flag-${c.id}`, label: `${c.name}'s photo walk`, stand: [0, 0], face: 0, mesh: f.g, data: c.id };
+        interactables.push(f.it);
+      } else { f.card = c; paintFlag(f); }
+      // up to six flags share a tile, in two rows
+      const col = n % 3;
+      const row = Math.floor(n / 3) % 2;
+      const x = t.city === 'online' ? t.cx + Math.sin(n * 2.1) * 1.1 : t.x0 + 0.55 + col * ((t.x1 - t.x0 - 1.1) / 2);
+      const z = t.city === 'online' ? t.cz + Math.cos(n * 2.1) * 1.1 : t.z0 + 0.6 + row * (t.z1 - t.z0 - 1.2);
+      f.g.position.set(x, 0, z);
+      f.it.stand = [x, z + 0.8];
+    }
+  }
+
+  // which tile the walker stands on, for planting a flag there
+  const tileAt = (x, z) => tiles.find((t) => x >= t.x0 && x <= t.x1 && z >= t.z0 && z <= t.z1) || null;
+
   return {
     show,
+    meet: {
+      tiles,
+      tileAt,
+      setFlags,
+      paintIdeas,
+      animate(t, reduced) {
+        if (reduced) return;
+        flames.forEach((f, i) => { const s = 1 + Math.sin(t * (7 + i * 3) + i) * 0.15; f.scale.set(s, 1 + Math.sin(t * (9 + i * 2)) * 0.2, s); });
+        fireLight.intensity = 3 + Math.sin(t * 11) * 0.5 + Math.sin(t * 17) * 0.3;
+      },
+    },
     displays,
     club: {
       lensCam,

@@ -414,7 +414,7 @@ body.panel-open .prompt { display: none; }
 .chip { background: var(--card); border: 1px solid var(--line); color: var(--muted); font: 600 0.85rem var(--f-body); padding: 4px 10px; cursor: pointer; }
 .chip.on { background: var(--red); border-color: var(--red); color: #fff; }
 .walks { list-style: none; margin: 0 !important; display: grid; gap: 10px; }
-.walk { background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--ink, var(--red)); padding: 10px 12px; }
+.walk { background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--who, var(--red)); padding: 10px 12px; }
 .walk.is-mine { border-color: #f5c400; }
 .walk p { margin-bottom: 6px; }
 .walk-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-family: var(--f-display); font-size: 1.15rem; }
@@ -439,3 +439,20 @@ body.panel-open .prompt { display: none; }
 .walk-code { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; }
 .walk-code .field { flex: 1 1 200px; margin: 0; }
 @media (max-width: 480px) { .walk-form .two { grid-template-columns: 1fr; } }
+
+/* Meeting Point: the ideas wall */
+.note-form { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 14px; }
+.note-form input { flex: 1 1 220px; background: var(--card); border: 1px solid var(--line); color: var(--ink); font: 1rem var(--f-body); padding: 8px 10px; }
+.note-form input:focus { outline: none; border-color: var(--red); }
+.notes { list-style: none; margin: 0 !important; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.notes li { background: #fff3a8; color: #111; padding: 10px; border-top: 4px solid var(--who, #f5c400); }
+.notes li:nth-child(4n+2) { background: #ffd0d8; }
+.notes li:nth-child(4n+3) { background: #cfeaff; }
+.notes li:nth-child(4n) { background: #d8f5c8; }
+.panel .notes p { color: #111; margin-bottom: 6px; font-size: 0.95rem; line-height: 1.35; }
+.notes span { font: 700 0.85rem var(--f-display); color: #444; }
+.linkish { background: none; border: 0; padding: 0; color: var(--red); font: inherit; text-decoration: underline; cursor: pointer; }
+/* on phones the chat feed keeps its last three lines, clear of the prompt */
+@media (max-width: 640px) {
+  .feed li:nth-last-child(n+4) { display: none; }
+}

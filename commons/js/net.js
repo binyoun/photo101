@@ -71,7 +71,8 @@ export function connect({ room, name, ink, cam, on }) {
     ws.addEventListener('open', () => {
       tries = 0;
       lastPos = '';
-      send({ t: 'hello', name, ink, cam: api.cam });
+      // batch: the server sends everyone's moves together, ten times a second
+      send({ t: 'hello', name, ink, cam: api.cam, batch: true });
     });
     ws.addEventListener('message', (e) => {
       let m;
@@ -79,6 +80,10 @@ export function connect({ room, name, ink, cam, on }) {
       if (m.t === 'welcome') {
         me = m.id;
         on.status && on.status('online');
+      }
+      if (m.t === 'poses') {
+        if (on.pos) for (const p of m.list) on.pos(p);
+        return;
       }
       const fn = on[m.t];
       if (fn) fn(m);

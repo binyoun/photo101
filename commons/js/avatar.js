@@ -165,6 +165,7 @@ export function makeAvatar(colour = COLOURS[0], { lecturer = false, cam = 'dslr'
         cheer: [0, -2.8, 0, 2.8, Math.abs(Math.sin(t * 4)) * 0.05, 0],
         jump: [0, -2.6, 0, 2.6, Math.abs(Math.sin(t * 5)) * 0.4, 0],
         crouch: [-0.5, -0.2, -0.5, 0.2, -0.24, -1.1],
+        sit: [-0.6, 0, -0.6, 0, -0.3, -1.3], // on a log by the campfire
       }[pose] || [0, 0, 0, 0, Math.sin(t * 1.8) * 0.015, 0];
       ease(arms[0].rotation, 'x', p[0]);
       ease(arms[0].rotation, 'z', p[1]);

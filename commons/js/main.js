@@ -23,10 +23,10 @@ const R = 0.3;
 const HINT = COARSE
   ? 'Tap the ground to walk, drag to look around. Tap anything glowing or anyone to see more.'
   : 'Walk with WASD or click the ground. Drag to look around. E to look at what is in front of you.';
-const CITY_HINT = 'Main Street runs south from the square: the Club Hall for group photos, the Gallery, and the Camera Shop.';
-const ACTS = { walks: 'club', door: 'support', screen: 'support', art: 'gallery', desk: 'desk', assignment: 'kiosk', tool: 'tools', notice: 'notice', work: 'show', curator: 'show', lastphoto: 'club', shutter: 'club', camera: 'shop', counter: 'shop' };
-const ACT_TEXT = { support: 'in the support room', gallery: 'in the gallery', desk: 'at the consultation desk', kiosk: 'reading an assignment', tools: 'in the tool corner', notice: 'at the notice board', hunt: 'on the photo hunt', show: 'at the show', club: 'in the Club Hall', shop: 'in the camera shop' };
-const actText = (a) => (a.startsWith('pose-') ? 'in the Club Hall' : ACT_TEXT[a] || '');
+const CITY_HINT = 'Main Street runs south from the square: the Club Hall, the Gallery, the Camera Shop, and at the end the Meeting Point, where you plan photo walks together.';
+const ACTS = { walks: 'club', flag: 'meet', ideas: 'meet', log: 'fire', door: 'support', screen: 'support', art: 'gallery', desk: 'desk', assignment: 'kiosk', tool: 'tools', notice: 'notice', work: 'show', curator: 'show', lastphoto: 'club', shutter: 'club', camera: 'shop', counter: 'shop' };
+const ACT_TEXT = { support: 'in the support room', gallery: 'in the gallery', desk: 'at the consultation desk', kiosk: 'reading an assignment', tools: 'in the tool corner', notice: 'at the notice board', hunt: 'on the photo hunt', show: 'at the show', club: 'in the Club Hall', shop: 'in the camera shop', meet: 'at the Meeting Point', fire: 'by the campfire' };
+const actText = (a) => (a === 'pose-sit' ? 'by the campfire' : a.startsWith('pose-') ? 'in the Club Hall' : ACT_TEXT[a] || '');
 
 // ---- preferences, per viewer ---------------------------------------------------
 function loadPrefs() {
@@ -223,6 +223,9 @@ function startNet() {
       walkcontact: (m) => walks.contact(m),
       walkdel: (m) => walks.del(m),
       walkerr: (m) => walks.err(m),
+      noteadd: (m) => walks.noteAdd(m),
+      notemine: (m) => walks.noteMine(m),
+      notedel: (m) => walks.noteDel(m),
       look(m) { const p = peers.get(m.id); if (p) p.av.setCamera(m.cam); },
       chat(m) {
         if (isHidden(m.id, m.name)) return;
@@ -339,7 +342,9 @@ const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 
 // ---- the photo walk board (Club Hall), reachable from anywhere -------------------------------------
 const walks = createWalks({ panel, openPanel, toast, feed, esc, getNet: () => net, myName: () => prefs.name });
-walks.onChange((cards) => {
+walks.onChange((cards, notes) => {
+  city.meet.setFlags(cards);
+  city.meet.paintIdeas(notes);
   city.club.paintBoard(cards, (t) => (WALK_TAGS.find((x) => x[0] === t) || [t, t])[1], (c) => (WALK_CITIES.find((x) => x[0] === c) || [c, c])[1]);
   $('.walks-btn b').textContent = cards.length;
 });
@@ -455,12 +460,21 @@ function interact(it) {
         <button class="btn primary" data-go="-6.2,21">Club Hall</button>
         <button class="btn primary" data-go="6.2,21">Gallery</button>
         <button class="btn primary" data-go="3.8,38.1">Camera Shop</button>
+        <button class="btn primary" data-go="0,46.4">Meeting Point</button>
         <button class="btn" data-go="0,-5.3">Consultation desk</button>
         <button class="btn" data-go="-11.9,0">Support room</button>
         <button class="btn" data-go="0,3.4">Notice board</button>
       </div>`);
   } else if (it.kind === 'walks') {
     walks.open();
+  } else if (it.kind === 'flag') {
+    walks.openPlan(it.data);
+  } else if (it.kind === 'plant') {
+    walks.plant(it.data.city, it.data.area);
+  } else if (it.kind === 'ideas') {
+    walks.openIdeas();
+  } else if (it.kind === 'log') {
+    setPose('sit');
   } else if (it.kind === 'camera') {
     const c = it.data;
     const mine = prefs.cam === c.id;
@@ -711,7 +725,7 @@ function isChild(o, parent) {
 }
 
 // ---- walking: A* over a quarter-metre grid, pulled taut -----------------------------------------------------------
-const GRID = { x0: -24, z0: -9, cell: 0.25, w: 192, h: 216 };
+const GRID = { x0: -24, z0: -9, cell: 0.25, w: 192, h: 272 };
 let grid = null;
 let gridDoor = null;
 function blocked(x, z, rad = R) {
@@ -904,6 +918,15 @@ function findNearest() {
     const d = Math.hypot(it.stand[0] - player.x, it.stand[1] - player.z);
     if (d < bd) { bd = d; best = it; }
   }
+  // standing on a district of the Meeting Point maps: plant a flag there
+  if (!best) {
+    const tile = city.meet.tileAt(player.x, player.z);
+    if (tile) {
+      if (!tile.plant) tile.plant = { kind: 'plant', id: 'plant', label: `Plant a flag: ${tile.area}`, stand: [0, 0], face: 0, data: tile };
+      tile.plant.face = player.r - Math.PI; // keep facing the way you are
+      best = tile.plant;
+    }
+  }
   if (best !== nearest) {
     nearest = best;
     promptBtn.hidden = !best;
@@ -943,7 +966,8 @@ const camButtons = CAMERAS.map((c) => {
 peekCount(room).then((n) => {
   if (n == null) return;
   gate.querySelector('.entry-count').textContent =
-    n === 0 ? 'Nobody else is here right now.' : n === 1 ? 'One person is here right now.' : `${n} people are here right now.`;
+    n >= 100 ? 'The Commons is full right now (100 people). You can still walk in on your own, and you will join everyone as soon as there is room.'
+      : n === 0 ? 'Nobody else is here right now.' : n === 1 ? 'One person is here right now.' : `${n} people are here right now.`;
 });
 gate.querySelector('form').addEventListener('submit', (e) => {
   e.preventDefault();
@@ -967,6 +991,7 @@ gate.querySelector('form').addEventListener('submit', (e) => {
 // ---- loop ---------------------------------------------------------------------------------------------------------------
 const clock = new THREE.Clock();
 let sendTimer = 0;
+let wasMoving = false;
 const look = new THREE.Vector3();
 function frame() {
   requestAnimationFrame(frame);
@@ -979,6 +1004,7 @@ function frame() {
   me.animate(dt, player.speed, t, player.pose);
   if (entered) findNearest();
   tickTimer();
+  city.meet.animate(t, REDUCED);
   poseBar.hidden = !entered || !inHall();
   world.door.animate(dt);
   if (!REDUCED) for (const d of city.displays) d.rotation.y += dt * 0.6;
@@ -988,12 +1014,21 @@ function frame() {
     it.mesh.position.y = 1.1 + (REDUCED ? 0 : Math.sin(t * 2 + it.stand[0]) * 0.12);
   }
   for (const p of peers.values()) {
+    // moves arrive about twice a second: walk toward each one at walking
+    // pace (faster if far behind), facing the way they are going
     const k = Math.min(1, dt * 6);
     const ox = p.x;
     const oz = p.z;
-    p.x += (p.tx - p.x) * k;
-    p.z += (p.tz - p.z) * k;
-    let d = p.tr - p.r;
+    const gap = Math.hypot(p.tx - p.x, p.tz - p.z);
+    let heading = p.tr;
+    if (gap > 10) { p.x = p.tx; p.z = p.tz; }
+    else if (gap > 0.01) {
+      const stepLen = Math.min(gap, Math.max(3.6, gap * 2.5) * dt);
+      p.x += ((p.tx - p.x) / gap) * stepLen;
+      p.z += ((p.tz - p.z) / gap) * stepLen;
+      if (gap > 0.3) heading = Math.atan2(p.tx - ox, p.tz - oz);
+    }
+    let d = heading - p.r;
     d = Math.atan2(Math.sin(d), Math.cos(d));
     p.r += d * k;
     p.av.root.position.set(p.x, 0, p.z);
@@ -1011,8 +1046,14 @@ function frame() {
   sun.target.position.set(cam.x, 0, cam.z);
   if (net && entered) {
     sendTimer += dt;
-    const act = player.pose ? `pose-${player.pose}` : player.activity || (inHall() ? 'club' : inside(GALLERY, player.x, player.z) ? 'show' : inside(SHOP, player.x, player.z) ? 'shop' : '');
-    if (sendTimer > 0.25) { sendTimer = 0; net.pos(player.x, player.z, player.r, act); }
+    // Every message counts against the server's free daily allowance, so
+    // send little: every 2 s when alone, twice a second with company, and
+    // the final spot as soon as you stop
+    const moving = player.speed > 0.05;
+    const every = peers.size ? 0.5 : 2;
+    const act = player.pose ? `pose-${player.pose}` : player.activity || (inHall() ? 'club' : inside(GALLERY, player.x, player.z) ? 'show' : inside(SHOP, player.x, player.z) ? 'shop' : player.z > 45.5 ? 'meet' : '');
+    if (sendTimer > every || (wasMoving && !moving)) { sendTimer = 0; net.pos(player.x, player.z, player.r, act); }
+    wasMoving = moving;
   }
   renderer.render(scene, camera);
   labels.render(scene, camera);
