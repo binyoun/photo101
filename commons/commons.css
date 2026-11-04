@@ -405,3 +405,37 @@ body.panel-open .prompt { display: none; }
   .prompt { bottom: calc(env(safe-area-inset-bottom) + 150px); }
   .links a { padding: 6px 9px; }
 }
+
+/* Photo walks (Club Hall board) */
+.tabs { display: flex; gap: 4px; margin: 4px 0 14px; border-bottom: 1px solid var(--line); }
+.tab { background: none; border: 0; border-bottom: 3px solid transparent; color: var(--dim); font: 700 1rem var(--f-display); text-transform: uppercase; padding: 6px 10px; cursor: pointer; }
+.tab.on { color: var(--ink); border-bottom-color: var(--red); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.chip { background: var(--card); border: 1px solid var(--line); color: var(--muted); font: 600 0.85rem var(--f-body); padding: 4px 10px; cursor: pointer; }
+.chip.on { background: var(--red); border-color: var(--red); color: #fff; }
+.walks { list-style: none; margin: 0 !important; display: grid; gap: 10px; }
+.walk { background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--ink, var(--red)); padding: 10px 12px; }
+.walk.is-mine { border-color: #f5c400; }
+.walk p { margin-bottom: 6px; }
+.walk-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-family: var(--f-display); font-size: 1.15rem; }
+.walk-head span { color: var(--muted); font-weight: 600; }
+.panel .walk-when { font: 600 0.85rem var(--f-mono); color: var(--red-light); }
+.walk-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+.walk-tags span { font: 600 0.75rem var(--f-mono); background: #1d1d1d; color: var(--ink); padding: 2px 6px; }
+.panel .going { font-size: 0.9rem; color: var(--ink); }
+.walk-act { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.walk-mine { font: 700 0.85rem var(--f-mono); color: #f5c400; }
+.panel .reach { color: var(--ink); background: #1d1d1d; border-left: 3px solid #2fb36d; padding: 6px 10px; margin: 0; }
+.panel .walk-safe { font-size: 0.8rem; color: var(--dim); margin: 6px 0 0; }
+.panel .walk-safety { font-size: 0.85rem; color: var(--dim); border-left: 3px solid #f5c400; padding-left: 10px; margin-top: 14px; }
+.walk-form .field, .walk-code .field { display: grid; gap: 4px; margin-bottom: 12px; }
+.walk-form .field > span, .walk-code .field > span { font: 600 0.75rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.04em; color: var(--dim); }
+.walk-form input, .walk-code input { width: 100%; background: var(--card); border: 1px solid var(--line); color: var(--ink); font: 1rem var(--f-body); padding: 8px 10px; color-scheme: dark; }
+.walk-form input:focus, .walk-code input:focus { outline: none; border-color: var(--red); }
+.walk-form small { color: var(--dim); font-size: 0.8rem; }
+.walk-form .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.walk-form .check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.85rem; color: var(--muted); background: var(--card); border-left: 3px solid #f5c400; padding: 10px; }
+.walk-form .check input { width: auto; margin-top: 3px; }
+.walk-code { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; }
+.walk-code .field { flex: 1 1 200px; margin: 0; }
+@media (max-width: 480px) { .walk-form .two { grid-template-columns: 1fr; } }

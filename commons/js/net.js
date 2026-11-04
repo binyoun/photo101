@@ -50,6 +50,7 @@ export function connect({ room, name, ink, cam, on }) {
     },
     chat(text) { send({ t: 'chat', text }); },
     snap() { send({ t: 'snap' }); }, // the Club Hall self-timer
+    send, // the photo walk board's messages
     cam,
     look(c) { api.cam = c; send({ t: 'look', cam: c }); }, // a camera from the shop
     close() { closed = true; if (ws) ws.close(); },

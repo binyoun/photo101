@@ -237,6 +237,49 @@ export function buildCity(scene, { colliders, interactables, ground }) {
   };
   sofa(-11, 27.9, '#3d5afe');
   sofa(-7.4, 27.9, '#ff8a00');
+  // the photo walk board above the sofas: plans to go and shoot together
+  const walkBoard = canvasTexture(1024, 336, () => {});
+  const cork = new THREE.Group();
+  cork.position.set(-9.2, 2.05, H.z1 - 0.2);
+  cork.rotation.y = Math.PI;
+  scene.add(cork);
+  box(4.8, 1.7, 0.06, '#f5c400', 0, 0, 0, cork);
+  const corkFace = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 1.5), new THREE.MeshStandardMaterial({ map: walkBoard.texture }));
+  corkFace.position.z = 0.04;
+  cork.add(corkFace);
+  interactables.push({ kind: 'walks', id: 'walks', label: 'Photo walks: find people to shoot with', stand: [-9.2, 26.6], face: Math.PI, mesh: cork });
+  const paintBoard = (cards, tagLabel, cityLabel) => walkBoard.redraw((ctx, w, h) => {
+    ctx.fillStyle = '#b98a55';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#141414';
+    ctx.font = '700 54px "Barlow Condensed", sans-serif';
+    ctx.fillText('PHOTO WALKS', 24, 60);
+    ctx.font = '400 24px "JetBrains Mono", monospace';
+    ctx.fillText(cards.length ? `${cards.length} plan${cards.length === 1 ? '' : 's'} pinned. Find people to shoot with.` : 'Nothing pinned yet. Post a plan to shoot together.', 26, 96);
+    cards.slice(0, 4).forEach((c, i) => {
+      const x = 24 + i * 248;
+      ctx.save();
+      ctx.translate(x + 110, 222);
+      ctx.rotate(((i % 2) - 0.5) * 0.06);
+      ctx.fillStyle = '#fffdf6';
+      ctx.fillRect(-110, -95, 220, 200);
+      ctx.fillStyle = c.ink || '#e60028';
+      ctx.fillRect(-110, -95, 220, 10);
+      ctx.fillStyle = '#e60028';
+      ctx.beginPath();
+      ctx.arc(0, -80, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#141414';
+      ctx.font = '700 34px "Barlow Condensed", sans-serif';
+      ctx.fillText(c.name.slice(0, 14), -96, -38);
+      ctx.font = '400 22px "Source Sans 3", sans-serif';
+      ctx.fillText(cityLabel(c.city), -96, -6);
+      ctx.fillStyle = '#555';
+      c.tags.forEach((t, k) => ctx.fillText(tagLabel(t), -96, 26 + k * 24));
+      ctx.restore();
+    });
+  });
+  paintBoard([], (t) => t, (c) => c);
   sign(3.0, 2.0, [
     ['GROUP PHOTO', 60],
     ['1  Set the timer on the camera.', 30, 'body'],
@@ -423,6 +466,7 @@ export function buildCity(scene, { colliders, interactables, ground }) {
     displays,
     club: {
       lensCam,
+      paintBoard,
       tally(on) { tallyMat.emissiveIntensity = on ? 2.5 : 0; },
       hang(img) {
         lastPhoto.redraw((ctx, w, h) => {

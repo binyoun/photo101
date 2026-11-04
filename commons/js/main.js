@@ -10,6 +10,7 @@ import { buildWorld, drawSign, makeItem, HIDING } from './world.js';
 import { makeAvatar, COLOURS, POSES, CAMERAS, CAMERA_IDS } from './avatar.js';
 import { buildCity, SOUTH, HALL, STAGE, GALLERY, SHOP, CAMERA_NOTES, inside } from './city.js';
 import { pastShows, showDir } from './shows.js';
+import { createWalks, TAGS as WALK_TAGS, CITIES as WALK_CITIES } from './walks.js';
 import { connect, roomCode, peekCount } from './net.js';
 import { SEMESTER, WEEKS, weekNow, nextSession, nextDue, niceDate } from './semester.js';
 import { currentSet, stamps, stamp, totalStamps } from './hunt.js';
@@ -23,7 +24,7 @@ const HINT = COARSE
   ? 'Tap the ground to walk, drag to look around. Tap anything glowing or anyone to see more.'
   : 'Walk with WASD or click the ground. Drag to look around. E to look at what is in front of you.';
 const CITY_HINT = 'Main Street runs south from the square: the Club Hall for group photos, the Gallery, and the Camera Shop.';
-const ACTS = { door: 'support', screen: 'support', art: 'gallery', desk: 'desk', assignment: 'kiosk', tool: 'tools', notice: 'notice', work: 'show', curator: 'show', lastphoto: 'club', shutter: 'club', camera: 'shop', counter: 'shop' };
+const ACTS = { walks: 'club', door: 'support', screen: 'support', art: 'gallery', desk: 'desk', assignment: 'kiosk', tool: 'tools', notice: 'notice', work: 'show', curator: 'show', lastphoto: 'club', shutter: 'club', camera: 'shop', counter: 'shop' };
 const ACT_TEXT = { support: 'in the support room', gallery: 'in the gallery', desk: 'at the consultation desk', kiosk: 'reading an assignment', tools: 'in the tool corner', notice: 'at the notice board', hunt: 'on the photo hunt', show: 'at the show', club: 'in the Club Hall', shop: 'in the camera shop' };
 const actText = (a) => (a.startsWith('pose-') ? 'in the Club Hall' : ACT_TEXT[a] || '');
 
@@ -198,6 +199,7 @@ function startNet() {
     on: {
       status: (s) => { netStatus = s; refreshCount(); },
       welcome(m) {
+        walks.welcome(m);
         for (const id of [...peers.keys()]) removePeer(id);
         m.peers.forEach(addPeer);
         refreshCount();
@@ -215,6 +217,12 @@ function startNet() {
         if (p.a !== m.a) setPeerAct(p, m.a);
       },
       snap(m) { startTimer(m.name, m.id === net.id); },
+      walkadd: (m) => walks.add(m),
+      walkmine: (m) => walks.mine(m),
+      walkjoin: (m) => walks.join(m),
+      walkcontact: (m) => walks.contact(m),
+      walkdel: (m) => walks.del(m),
+      walkerr: (m) => walks.err(m),
       look(m) { const p = peers.get(m.id); if (p) p.av.setCamera(m.cam); },
       chat(m) {
         if (isHidden(m.id, m.name)) return;
@@ -307,6 +315,7 @@ $('.chat').addEventListener('submit', (e) => {
 const panel = $('.panel');
 let panelOpen = false;
 function openPanel(html, act = '') {
+  if (walks) walks.closed();
   panel.querySelector('.panel-body').innerHTML = html;
   panel.hidden = false;
   panelOpen = true;
@@ -315,6 +324,7 @@ function openPanel(html, act = '') {
 }
 function closePanel() {
   if (!panelOpen) return;
+  walks.closed();
   panel.hidden = true;
   panelOpen = false;
   document.body.classList.remove('panel-open');
@@ -326,6 +336,14 @@ panel.addEventListener('click', (e) => {
 });
 
 const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// ---- the photo walk board (Club Hall), reachable from anywhere -------------------------------------
+const walks = createWalks({ panel, openPanel, toast, feed, esc, getNet: () => net, myName: () => prefs.name });
+walks.onChange((cards) => {
+  city.club.paintBoard(cards, (t) => (WALK_TAGS.find((x) => x[0] === t) || [t, t])[1], (c) => (WALK_CITIES.find((x) => x[0] === c) || [c, c])[1]);
+  $('.walks-btn b').textContent = cards.length;
+});
+$('.walks-btn').addEventListener('click', () => walks.open());
 const ext = (href, label, primary = false) => `<a class="btn${primary ? ' primary' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
 
 function interact(it) {
@@ -441,6 +459,8 @@ function interact(it) {
         <button class="btn" data-go="-11.9,0">Support room</button>
         <button class="btn" data-go="0,3.4">Notice board</button>
       </div>`);
+  } else if (it.kind === 'walks') {
+    walks.open();
   } else if (it.kind === 'camera') {
     const c = it.data;
     const mine = prefs.cam === c.id;
