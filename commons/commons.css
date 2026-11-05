@@ -456,3 +456,31 @@ body.panel-open .prompt { display: none; }
 @media (max-width: 640px) {
   .feed li:nth-last-child(n+4) { display: none; }
 }
+
+/* City map (overview on a first visit, Map button, M key) */
+.panel-card.map-card { max-width: 520px; }
+.city-map { display: block; width: 100%; max-height: 64vh; margin: 4px auto 10px; background: #5c8f45; }
+.city-map .m-square { fill: #e9e4d6; }
+.city-map .m-city { fill: #6fa352; }
+.city-map .m-street { fill: #cfc8b6; }
+.city-map .m-lot { fill: #b59a72; stroke: #8d7552; stroke-width: 0.15; stroke-dasharray: 0.6 0.4; }
+.city-map .m-district { fill: #f2d9b1; stroke: #222; stroke-width: 0.12; }
+.city-map .m-fire { fill: #ff8a1f; stroke: #7a3a00; stroke-width: 0.2; }
+.city-map .m-wall { fill: #222; }
+.city-map .m-place { fill: #fff; stroke: #111; stroke-width: 0.25; transition: fill 0.15s; }
+.city-map .m-spot { cursor: pointer; outline: none; }
+.city-map .m-spot:focus-visible .m-place { fill: #ffd84d; }
+@media (hover: hover) { .city-map .m-spot:hover .m-place { fill: #ffd84d; } }
+.city-map .m-spot:focus-visible .m-place { stroke: var(--red); stroke-width: 0.45; }
+.city-map .m-spot[data-name="Meeting Point"] .m-place { fill: rgba(255, 255, 255, 0.18); stroke-dasharray: 0.8 0.5; }
+@media (hover: hover) { .city-map .m-spot[data-name="Meeting Point"]:hover .m-place { fill: rgba(255, 216, 77, 0.35); } }
+.city-map text { text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+.city-map .m-name { font: 700 1.75px var(--f-display); fill: #111; text-transform: uppercase; letter-spacing: 0.02em; }
+.city-map .m-sub { font: 600 1.25px var(--f-mono); fill: #111; stroke: rgba(255,255,255,0.6); stroke-width: 0.25; paint-order: stroke; }
+.city-map .m-sub.dim { fill: rgba(0, 0, 0, 0.55); stroke: none; }
+.city-map .m-peer { fill: #fff; stroke: #111; stroke-width: 0.2; opacity: 0.85; }
+.city-map .m-you-ring { fill: none; stroke-width: 0.35; animation: m-pulse 1.6s ease-out infinite; transform-origin: center; transform-box: fill-box; }
+.city-map .m-you circle:last-child { stroke: #fff; stroke-width: 0.3; }
+.city-map .m-you-label { font: 700 1.6px var(--f-display); fill: #fff; stroke: #111; stroke-width: 0.35; paint-order: stroke; text-transform: uppercase; }
+@keyframes m-pulse { from { transform: scale(0.6); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .city-map .m-you-ring { animation: none; } }

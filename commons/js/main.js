@@ -10,6 +10,7 @@ import { buildWorld, drawSign, makeItem, HIDING } from './world.js';
 import { makeAvatar, COLOURS, POSES, CAMERAS, CAMERA_IDS } from './avatar.js';
 import { buildCity, SOUTH, HALL, STAGE, GALLERY, SHOP, CAMERA_NOTES, inside } from './city.js';
 import { pastShows, showDir } from './shows.js';
+import { mapHTML } from './map.js';
 import { createWalks, TAGS as WALK_TAGS, CITIES as WALK_CITIES } from './walks.js';
 import { connect, roomCode, peekCount } from './net.js';
 import { SEMESTER, WEEKS, weekNow, nextSession, nextDue, niceDate } from './semester.js';
@@ -320,6 +321,7 @@ let panelOpen = false;
 function openPanel(html, act = '') {
   if (walks) walks.closed();
   panel.querySelector('.panel-body').innerHTML = html;
+  panel.querySelector('.panel-card').classList.remove('map-card');
   panel.hidden = false;
   panelOpen = true;
   document.body.classList.add('panel-open');
@@ -349,6 +351,28 @@ walks.onChange((cards, notes) => {
   $('.walks-btn b').textContent = cards.length;
 });
 $('.walks-btn').addEventListener('click', () => walks.open());
+
+// ---- the city map: an overview on a first visit, then the Map button or M -----------------------
+function openMap() {
+  const people = [...peers.values()].filter((p) => p.av.root.visible).map((p) => ({ x: p.x, z: p.z }));
+  openPanel(mapHTML({ tiles: city.meet.tiles, me: { x: player.x, z: player.z, colour: prefs.colour }, peers: people }));
+  panel.querySelector('.panel-card').classList.add('map-card');
+}
+function goFromMap(spot) {
+  const [x, z] = spot.dataset.go.split(',').map(Number);
+  closePanel();
+  walkTo(x, z, null);
+  if (player.path.length) toast(`Walking to the ${spot.dataset.name}.`);
+}
+panel.addEventListener('click', (e) => {
+  const spot = e.target.closest('.m-spot');
+  if (spot) goFromMap(spot);
+});
+panel.addEventListener('keydown', (e) => {
+  const spot = e.target.closest && e.target.closest('.m-spot');
+  if (spot && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); goFromMap(spot); }
+});
+$('.map-btn').addEventListener('click', () => openMap());
 const ext = (href, label, primary = false) => `<a class="btn${primary ? ' primary' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
 
 function interact(it) {
@@ -670,6 +694,7 @@ addEventListener('keydown', (e) => {
   if (panelOpen || typing() || !entered) return;
   const k = e.key.toLowerCase();
   if ((k === 'e' || k === 'enter') && nearest) { interact(nearest); return; }
+  if (k === 'm') { openMap(); return; }
   if (k === 't' || k === 'enter') { e.preventDefault(); $('.chat input').focus(); return; }
   if (/^[1-5]$/.test(k) && inHall()) { const p = POSES[+k - 1]; setPose(player.pose === p ? '' : p); return; }
   keys.add(k);
@@ -986,6 +1011,12 @@ gate.querySelector('form').addEventListener('submit', (e) => {
   feed(CITY_HINT, 'sys');
   const found = set.items.filter((i) => stamps()[i.id]).length;
   if (found < set.items.length) feed(`Photo hunt: ${set.items.length - found} things are hidden around here this week.`, 'sys');
+  // first visit: start with the overview of the whole city
+  if (!prefs.mapSeen) {
+    prefs.mapSeen = 1;
+    savePrefs();
+    openMap();
+  }
 });
 
 // ---- loop ---------------------------------------------------------------------------------------------------------------
