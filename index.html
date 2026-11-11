@@ -10,601 +10,227 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg: #000;
-            --card: #0d0d0d;
-            --card-hover: #141414;
-            --line: #262626;
-            --ink: #ececec;
-            --muted: #c4c4c4;
-            --dim: #9c9c9c;
-            --red: #e60028;
-            --red-light: #ff3355;
+            --bg: #faf8f4;
+            --paper: #ffffff;
+            --card: #ffffff;
+            --line: #e8e3da;
+            --ink: #1b1b1f;
+            --muted: #46454c;
+            --dim: #6b6970;
+            --red: #d80027;
+            --red-soft: #fdebee;
+            --sun: #fff4d6;
+            --sky: #e8f1fb;
+            --leaf: #e8f5ec;
+            --shadow: 0 1px 2px rgba(30, 20, 10, .05), 0 8px 24px rgba(30, 20, 10, .06);
             --f-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
             --f-body: "Source Sans 3", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
             --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
         }
-
-        html {
-            scroll-behavior: smooth;
-            scroll-padding-top: 4rem;
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--ink);
-            font-family: var(--f-body);
-            line-height: 1.55;
-        }
-
+        html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+        body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 17px; line-height: 1.55; }
         a { color: inherit; }
+        :focus-visible { outline: 3px solid var(--red); outline-offset: 2px; border-radius: 6px; }
 
-        /* ---------- Hero ---------- */
-        .hero {
-            position: relative;
-            height: clamp(300px, 48vh, 440px);
-            overflow: hidden;
-        }
+        /* ---------- hero (pixel title, light) ---------- */
+        .hero { position: relative; height: clamp(260px, 40vh, 380px); overflow: hidden; background: #f3efe7; }
+        .particles { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+        .pixel-background { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+        .pixel-grid { display: flex; flex-direction: column; }
+        .pixel-row { display: flex; }
+        .pixel { width: 12px; height: 12px; background: transparent; transition: background-color .05s, box-shadow .05s; }
+        .content-overlay { position: absolute; left: 0; right: 0; bottom: 22px; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 0 16px; pointer-events: none; }
+        .content-overlay > * { pointer-events: auto; }
+        .instructions { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); }
+        .nav-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+        .nav-btn { font-family: var(--f-body); font-weight: 600; font-size: .95rem; text-decoration: none; color: var(--ink); background: var(--paper); border-radius: 999px; padding: 8px 16px; box-shadow: var(--shadow); }
+        .nav-btn:hover { color: var(--red); }
+        .nav-btn.primary { background: var(--red); color: #fff; }
+        .nav-btn.primary:hover { background: #b40021; color: #fff; }
 
-        .pixel-background {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: crosshair;
-        }
-
-        .pixel-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-        }
-
-        .pixel-row {
-            display: flex;
-            gap: 0;
-        }
-
-        .pixel {
-            width: 12px;
-            height: 12px;
-            background: #0a0a0a;
-            transition: background-color 0.05s, box-shadow 0.05s;
-        }
-
-        .pixel.text-pixel {
-            background: #1a1a1a;
-        }
-
-        .content-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 0 16px 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.9rem;
-            pointer-events: none;
-            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
-        }
-
-        .instructions {
-            color: #8f8f8f;
-            font-family: var(--f-mono);
-            font-size: 0.8rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        .nav-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
-            pointer-events: auto;
-        }
-
-        .nav-btn {
-            background: rgba(0,0,0,0.8);
-            border: 1px solid #333;
-            color: #999;
-            padding: 0.6rem 1.4rem;
-            font-family: var(--f-body);
-            font-size: 0.88rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-decoration: none;
-            display: inline-block;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .nav-btn:hover {
-            border-color: #fff;
-            color: #fff;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-        }
-
-        .nav-btn.primary {
-            border-color: var(--red);
-            color: var(--red);
-        }
-
-        .nav-btn.primary:hover {
-            background: var(--red);
-            color: #fff;
-            box-shadow: 0 0 30px rgba(230, 0, 40, 0.4);
-        }
-
-        .scroll-cue {
-            color: #8f8f8f;
-            font-family: var(--f-mono);
-            font-size: 0.78rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            text-decoration: none;
-            pointer-events: auto;
-        }
-
-        .scroll-cue:hover { color: #aaa; }
-
-        /* ---------- Sticky bar ---------- */
-        .bar {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background: rgba(0,0,0,0.88);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--line);
-        }
-
-        .bar-inner {
-            max-width: 1120px;
-            margin: 0 auto;
-            padding: 0 16px;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            height: 3.25rem;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .bar-inner::-webkit-scrollbar { display: none; }
-
-        .bar-logo {
-            font-family: var(--f-display);
-            font-weight: 700;
-            font-size: 1.15rem;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-
+        /* ---------- sticky bar ---------- */
+        .bar { position: sticky; top: 0; z-index: 20; background: rgba(250, 248, 244, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+        .bar-inner { max-width: 1120px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; gap: 18px; }
+        .bar-logo { font-family: var(--f-display); font-weight: 700; font-size: 1.3rem; text-transform: uppercase; text-decoration: none; letter-spacing: .02em; white-space: nowrap; }
         .bar-logo span { color: var(--red); }
+        .bar-links { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+        .bar-links a { text-decoration: none; font-weight: 600; font-size: .92rem; color: var(--muted); padding: 6px 11px; border-radius: 999px; white-space: nowrap; }
+        .bar-links a:hover { background: var(--paper); color: var(--ink); }
+        .bar-links a.hl { background: var(--red); color: #fff; }
 
-        .bar-links {
-            display: flex;
-            gap: 1.25rem;
-            margin-left: auto;
-        }
+        /* ---------- layout ---------- */
+        main { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+        section { padding: 56px 0 8px; }
+        .label { display: inline-block; font-family: var(--f-mono); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
+        h2 { font-family: var(--f-display); font-weight: 700; font-size: clamp(2rem, 4vw, 2.6rem); line-height: 1.05; text-transform: uppercase; letter-spacing: .01em; margin-bottom: 10px; }
+        h3 { font-family: var(--f-body); font-weight: 700; font-size: 1.15rem; line-height: 1.3; }
+        .lede { color: var(--muted); max-width: 44rem; margin-bottom: 22px; }
+        .lede b { color: var(--ink); }
+        .meta { display: block; font-family: var(--f-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
 
-        .bar-links a {
-            font-family: var(--f-mono);
-            font-size: 0.8rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--muted);
-            text-decoration: none;
-            white-space: nowrap;
-        }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; font-size: .95rem; text-decoration: none; color: var(--ink); background: var(--paper); border: 1.5px solid var(--line); border-radius: 999px; padding: 9px 16px; transition: border-color .15s, color .15s; }
+        .btn:hover { border-color: var(--ink); }
+        .btn.primary { background: var(--red); border-color: var(--red); color: #fff; }
+        .btn.primary:hover { background: #b40021; border-color: #b40021; }
 
-        .bar-links a:hover { color: #fff; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 14px; }
+        .card { display: flex; flex-direction: column; gap: 6px; background: var(--card); border-radius: 18px; padding: 18px 20px; box-shadow: var(--shadow); text-decoration: none; color: var(--ink); border: 1.5px solid transparent; transition: border-color .15s, transform .15s; }
+        a.card:hover { border-color: var(--red); transform: translateY(-2px); }
+        .card p { color: var(--muted); font-size: .97rem; }
+        .card .go { margin-top: auto; padding-top: 6px; font-weight: 700; font-size: .92rem; color: var(--red); }
 
-        /* ---------- Sections ---------- */
-        main {
-            max-width: 1120px;
-            margin: 0 auto;
-            padding: 0 16px 4rem;
-        }
+        /* ---------- right now ---------- */
+        #now { padding-top: 36px; }
+        .now-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 14px; }
+        @media (max-width: 860px) { .now-grid { grid-template-columns: minmax(0, 1fr); } }
+        .due-card { background: var(--paper); border-radius: 22px; padding: 22px 24px; box-shadow: var(--shadow); border-left: 6px solid var(--red); }
+        .due-card .which { font-family: var(--f-mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--red); }
+        .due-card h3 { font-family: var(--f-display); font-size: 2rem; text-transform: uppercase; line-height: 1.05; margin: 4px 0 6px; }
+        .due-card .when { font-size: 1.05rem; color: var(--muted); }
+        .due-card .when b { color: var(--ink); }
+        .due-card .left { display: inline-block; margin-left: 6px; font-weight: 700; color: var(--red); background: var(--red-soft); border-radius: 999px; padding: 1px 10px; font-size: .92rem; }
+        .due-card .left.calm { color: #2e6b3f; background: var(--leaf); }
+        .due-card .what { color: var(--muted); margin: 10px 0 14px; font-size: .98rem; }
+        .due-card .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+        .side { display: flex; flex-direction: column; gap: 14px; }
+        .mini { background: var(--paper); border-radius: 18px; padding: 16px 18px; box-shadow: var(--shadow); }
+        .mini .meta { margin-bottom: 2px; }
+        .mini .big { font-family: var(--f-display); font-weight: 700; font-size: 1.5rem; text-transform: uppercase; line-height: 1.1; }
+        .mini p { color: var(--muted); font-size: .95rem; }
+        .mini a { color: var(--red); font-weight: 700; text-decoration: none; font-size: .92rem; }
+        .mini.week { background: var(--sun); }
+        .mini.support { background: var(--sky); }
 
-        section {
-            padding: 4rem 0 0;
-        }
+        /* ---------- I need to... ---------- */
+        .search { display: flex; align-items: center; gap: 10px; background: var(--paper); border-radius: 999px; padding: 6px 8px 6px 18px; box-shadow: var(--shadow); max-width: 560px; margin-bottom: 18px; border: 1.5px solid transparent; }
+        .search:focus-within { border-color: var(--red); }
+        .search svg { width: 20px; height: 20px; color: var(--dim); flex: none; }
+        .search input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 1rem; padding: 8px 0; color: var(--ink); outline: none; }
+        .search button { border: 0; background: var(--bg); color: var(--muted); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: .9rem; cursor: pointer; }
+        .tasks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 12px; align-items: start; }
+        .task { background: var(--paper); border-radius: 16px; box-shadow: var(--shadow); border: 1.5px solid transparent; }
+        .task[open] { border-color: var(--line); }
+        .task summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; font-weight: 700; font-size: 1.02rem; }
+        .task summary::-webkit-details-marker { display: none; }
+        .task summary .ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex: none; background: var(--t, var(--red-soft)); color: var(--tc, var(--red)); }
+        .task summary .ic svg { width: 20px; height: 20px; }
+        .task summary .chev { margin-left: auto; color: var(--dim); transition: transform .2s; }
+        .task[open] summary .chev { transform: rotate(90deg); }
+        .task .ans { padding: 0 18px 16px 66px; color: var(--muted); font-size: .97rem; }
+        .task .ans p + p, .task .ans p + ul, .task .ans ul + p { margin-top: 8px; }
+        .task .ans ul { padding-left: 1.1rem; }
+        .task .ans b { color: var(--ink); }
+        .task .ans .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .task .ans .btn { font-size: .88rem; padding: 7px 13px; }
+        .t-sky { --t: var(--sky); --tc: #1f5fa8; }
+        .t-leaf { --t: var(--leaf); --tc: #2e6b3f; }
+        .t-sun { --t: var(--sun); --tc: #8a5a00; }
+        .t-lilac { --t: #f1ebfb; --tc: #6a3fb5; }
+        .faq-hits { margin-top: 16px; }
+        .faq-hits .hit { background: var(--paper); border-radius: 14px; padding: 12px 16px; box-shadow: var(--shadow); margin-bottom: 8px; }
+        .faq-hits .hit b { display: block; }
+        .faq-hits .hit span { color: var(--muted); font-size: .95rem; }
+        .nores { color: var(--dim); padding: 6px 2px; }
 
-        .label {
-            font-family: var(--f-mono);
-            font-size: 0.8rem;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: var(--red);
-        }
+        /* ---------- contact ---------- */
+        .contacts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: 12px; margin-bottom: 16px; }
+        .who { background: var(--paper); border-radius: 18px; padding: 16px 18px; box-shadow: var(--shadow); }
+        .who p { color: var(--muted); font-size: .95rem; margin-top: 4px; }
+        .who a { color: var(--red); font-weight: 600; text-decoration: none; }
+        .addr { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; font-size: 1.02rem; }
+        .addr a, .who p a { overflow-wrap: anywhere; }
+        .copy { border: 1.5px solid var(--line); background: var(--paper); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; color: var(--ink); }
+        .copy:hover { border-color: var(--ink); }
+        .copy.done { background: var(--leaf); border-color: var(--leaf); color: #2e6b3f; }
+        .howto { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 14px; }
+        @media (max-width: 860px) { .howto { grid-template-columns: minmax(0, 1fr); } }
+        .howto-text { background: var(--sun); border-radius: 18px; padding: 18px 20px; }
+        .howto-text ul { padding-left: 1.1rem; margin-top: 8px; color: var(--muted); }
+        .howto-text li { margin: 6px 0; }
+        .howto-text b { color: var(--ink); }
+        .tpl { background: var(--paper); border-radius: 18px; padding: 16px 18px; box-shadow: var(--shadow); }
+        .tpl-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .tpl-head .meta { margin: 0; }
+        .tpl pre { font-family: var(--f-mono); font-size: .82rem; line-height: 1.6; white-space: pre-wrap; background: var(--bg); border-radius: 12px; padding: 14px 16px; color: var(--ink); }
+        .lede a { color: var(--red); font-weight: 600; text-decoration: none; }
 
-        h2 {
-            font-family: var(--f-display);
-            font-weight: 700;
-            font-size: clamp(2rem, 5vw, 2.8rem);
-            line-height: 1.05;
-            text-transform: uppercase;
-            letter-spacing: 0.01em;
-            margin: 0.35rem 0 0.75rem;
-        }
+        /* ---------- this semester ---------- */
+        .now { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; background: var(--paper); border-radius: 22px; padding: 22px 24px; box-shadow: var(--shadow); }
+        @media (max-width: 860px) { .now { grid-template-columns: minmax(0, 1fr); } }
+        .now-facts { list-style: none; }
+        .now-facts li { display: flex; gap: 14px; padding: 9px 0; border-top: 1px solid var(--line); font-size: .98rem; }
+        .now-facts li:first-child { border-top: 0; }
+        .now-facts b { flex: 0 0 110px; font-family: var(--f-mono); font-weight: 400; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); padding-top: 3px; }
+        .now-actions { display: flex; flex-direction: column; gap: 10px; }
 
-        .lede {
-            color: var(--muted);
-            max-width: 62ch;
-            font-size: 1.05rem;
-        }
+        /* ---------- assignments ---------- */
+        .a-head { display: flex; justify-content: space-between; align-items: baseline; }
+        .weight { font-family: var(--f-display); font-weight: 700; font-size: 2rem; color: var(--red); line-height: 1; }
+        .due { display: inline-block; align-self: flex-start; font-family: var(--f-mono); font-size: .8rem; background: var(--red-soft); color: var(--red); border-radius: 999px; padding: 3px 10px; margin: 4px 0; }
+        .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .links a { font-weight: 600; font-size: .88rem; text-decoration: none; border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 12px; }
+        .links a:hover { border-color: var(--ink); }
+        .links a.sub { background: var(--ink); border-color: var(--ink); color: #fff; }
+        .card.is-next { border-color: var(--red); }
 
-        h3 {
-            font-family: var(--f-display);
-            font-weight: 600;
-            font-size: 1.45rem;
-            line-height: 1.15;
-            letter-spacing: 0.01em;
-        }
+        /* ---------- modules ---------- */
+        .modules { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 12px; }
+        .module { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 12px; background: var(--paper); border-radius: 16px; padding: 16px 18px; box-shadow: var(--shadow); }
+        .module .num { grid-row: span 2; font-family: var(--f-display); font-weight: 700; font-size: 1.6rem; color: var(--red); background: var(--red-soft); border-radius: 12px; display: grid; place-items: center; height: 52px; }
+        .module .weeks { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+        .module .body p { color: var(--muted); font-size: .95rem; margin-top: 2px; }
+        .module.current { outline: 2.5px solid var(--red); }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-            gap: 1rem;
-            margin-top: 1.75rem;
-        }
+        /* ---------- student work ---------- */
+        .outcome-h { margin: 6px 0 4px; }
+        .outcome-p { color: var(--muted); margin-bottom: 16px; max-width: 44rem; }
+        .work { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 14px; }
+        .work a { text-decoration: none; background: var(--paper); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); }
+        .work img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+        .work .cap { padding: 10px 12px 12px; }
+        .work .cap b { display: block; font-size: .95rem; }
+        .work .cap span { font-size: .85rem; color: var(--dim); }
+        .after-work { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 
-        .card {
-            background: var(--card);
-            border: 1px solid var(--line);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-            min-width: 0;
-        }
+        /* ---------- references + rules ---------- */
+        .ref-group { margin-bottom: 22px; }
+        .ref-group > .meta { margin-bottom: 10px; }
+        .rules { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 12px; }
+        .rules li { background: var(--paper); border-radius: 16px; padding: 16px 18px; box-shadow: var(--shadow); }
+        .rules b { display: block; margin-bottom: 2px; }
+        .rules span { color: var(--muted); font-size: .95rem; }
 
-        a.card {
-            text-decoration: none;
-            transition: background 0.2s;
-        }
+        footer { margin-top: 64px; padding: 36px 16px 44px; text-align: center; border-top: 1px solid var(--line); color: var(--dim); font-size: .9rem; line-height: 1.8; }
+        footer .school { letter-spacing: 2px; text-transform: uppercase; font-size: .8rem; }
+        footer .university { color: var(--ink); font-weight: 700; letter-spacing: 3px; text-transform: uppercase; }
+        footer a { color: var(--red); text-decoration: none; }
 
-        a.card:hover { background: var(--card-hover); border-color: #444; }
-        a.card:hover h3 { color: #fff; }
-
-        .card p {
-            color: var(--muted);
-            font-size: 1.02rem;
-        }
-
-        .meta {
-            font-family: var(--f-mono);
-            font-size: 0.8rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--dim);
-        }
-
-        .go {
-            margin-top: auto;
-            padding-top: 0.4rem;
-            font-family: var(--f-mono);
-            font-size: 0.8rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--red);
-        }
-
-        .links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: auto;
-            padding-top: 0.5rem;
-        }
-
-        .links a, .btn {
-            font-family: var(--f-mono);
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            text-decoration: none;
-            color: var(--ink);
-            border: 1px solid #3a3a3a;
-            padding: 0.55rem 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .links a:hover, .btn:hover {
-            border-color: #fff;
-            color: #fff;
-        }
-
-        .btn.primary {
-            border-color: var(--red);
-            color: var(--red);
-        }
-
-        .btn.primary:hover {
-            background: var(--red);
-            color: #fff;
-        }
-
-        /* This semester */
-        .now {
-            margin-top: 1.75rem;
-            border: 1px solid var(--line);
-            background: var(--card);
-            padding: 1.75rem;
-            display: grid;
-            grid-template-columns: 1.3fr 1fr;
-            gap: 2rem;
-        }
-
-        .now-facts {
-            list-style: none;
-            display: grid;
-            gap: 0.55rem;
-        }
-
-        .now-facts li {
-            display: flex;
-            gap: 0.75rem;
-            font-size: 1.05rem;
-        }
-
-        .now-facts li b {
-            font-family: var(--f-mono);
-            font-weight: 400;
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--dim);
-            min-width: 7.5rem;
-            padding-top: 0.2rem;
-        }
-
-        .now-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-            align-items: stretch;
-        }
-
-        .now-actions .btn { text-align: center; padding: 0.8rem 1rem; }
-
-        /* Assignments */
-        .weight {
-            font-family: var(--f-display);
-            font-weight: 700;
-            font-size: 2.6rem;
-            line-height: 1;
-            color: var(--red);
-        }
-
-        .a-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            gap: 1rem;
-        }
-
-        .due {
-            font-family: var(--f-mono);
-            font-size: 0.82rem;
-            color: var(--ink);
-            border-left: 2px solid var(--red);
-            padding-left: 0.6rem;
-        }
-
-        /* Modules */
-        .modules {
-            margin-top: 1.75rem;
-            border-top: 1px solid var(--line);
-        }
-
-        .module {
-            display: grid;
-            grid-template-columns: 5.5rem 7.5rem 1fr;
-            gap: 1rem;
-            padding: 1.1rem 0;
-            border-bottom: 1px solid var(--line);
-            align-items: baseline;
-        }
-
-        .module .num {
-            font-family: var(--f-display);
-            font-weight: 700;
-            font-size: 1.6rem;
-            color: var(--red);
-        }
-
-        .module .weeks {
-            font-family: var(--f-mono);
-            font-size: 0.8rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--dim);
-        }
-
-        .module h3 { font-size: 1.3rem; }
-
-        .module p {
-            color: var(--muted);
-            font-size: 1.02rem;
-            margin-top: 0.2rem;
-        }
-
-        /* References */
-        .ref-group {
-            margin-top: 2.5rem;
-        }
-
-        .ref-group > .meta {
-            color: var(--muted);
-        }
-
-        .ref-group .grid { margin-top: 0.9rem; }
-
-        .ref-group .card h3 { font-size: 1.25rem; }
-
-        /* Rules */
-        .rules {
-            margin-top: 1.75rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-            gap: 1.25rem 2rem;
-            list-style: none;
-        }
-
-        .rules li {
-            border-top: 1px solid var(--line);
-            padding-top: 0.9rem;
-        }
-
-        .rules b {
-            display: block;
-            font-family: var(--f-display);
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin-bottom: 0.2rem;
-        }
-
-        .rules span { color: var(--muted); font-size: 1.02rem; }
-
-        /* Footer */
-        footer {
-            border-top: 1px solid var(--line);
-            margin-top: 4rem;
-            padding: 2.5rem 16px 3rem;
-            text-align: center;
-            color: #8f8f8f;
-            font-size: 0.88rem;
-            line-height: 1.8;
-        }
-
-        footer .school {
-            color: #a0a0a0;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-size: 0.82rem;
-        }
-
-        footer .university {
-            color: #999;
-            font-weight: 600;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-top: 0.25rem;
-        }
-
-        footer .copyright {
-            margin-top: 1rem;
-            font-size: 0.82rem;
-        }
-
-        footer a {
-            color: var(--red);
-            text-decoration: none;
-        }
-
-        footer a:hover { color: var(--red-light); }
-
-        .work {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-top: 1.75rem;
-        }
-        .work a { display: block; text-decoration: none; min-width: 0; color: inherit; }
-        .work img {
-            display: block;
-            width: 100%;
-            aspect-ratio: 4 / 5;
-            object-fit: cover;
-            background: var(--card);
-            border: 1px solid var(--line);
-            filter: grayscale(35%);
-            transition: filter 0.3s;
-        }
-        .work a:hover img { filter: grayscale(0%); }
-        .work .cap { margin-top: 0.6rem; }
-        .work .cap b { display: block; font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; line-height: 1.25; }
-        .work .cap span { font-size: 0.95rem; color: var(--muted); }
-        .after-work { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
-        .outcome-h { font-family: var(--f-display); font-weight: 600; font-size: 1.3rem; margin-top: 2.5rem; }
-        .outcome-p { color: var(--muted); max-width: 46rem; margin-top: 0.4rem; }
-        @media (max-width: 768px) {
-            .work { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (max-width: 768px) {
-            .pixel {
-                width: 8px;
-                height: 8px;
-            }
-
-            .nav-btn {
-                padding: 0.55rem 1rem;
-                font-size: 0.82rem;
-            }
-
-            .now {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-                padding: 1.25rem;
-            }
-
-            .module {
-                grid-template-columns: 3.5rem 1fr;
-                gap: 0.2rem 1rem;
-            }
-
-            .module .weeks { grid-column: 2; grid-row: 1; }
-            .module .body { grid-column: 2; }
-            .module .num { grid-row: 1 / span 2; }
-        }
-
-        @media (max-width: 480px) {
-            .pixel {
-                width: 6px;
-                height: 6px;
-            }
-
-            .nav-buttons { gap: 0.6rem; }
-
-            .nav-btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
-                letter-spacing: 1.5px;
-            }
-
+        @media (max-width: 640px) {
+            body { font-size: 16px; }
+            section { padding-top: 40px; }
+            .bar-logo { display: none; }
+            .bar-links { margin-left: 0; }
+            .task .ans { padding-left: 18px; }
             .now-facts li { flex-direction: column; gap: 0; }
         }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } a.card:hover { transform: none; } }
     </style>
 </head>
 <body>
     <header class="hero" id="hero">
+        <canvas class="particles" id="particles" aria-hidden="true"></canvas>
         <div class="pixel-background" id="pixelBackground">
             <div class="pixel-grid" id="pixelGrid"></div>
         </div>
 
         <div class="content-overlay">
-            <p class="instructions">Move cursor to illuminate</p>
 
             <nav class="nav-buttons" aria-label="Quick links">
-                <a href="roadmap.html" class="nav-btn primary">Roadmap</a>
-                <a href="#assignments" class="nav-btn">Assignments</a>
-                <a href="camera-checker.html" class="nav-btn">Camera Checker</a>
-                <a href="#references" class="nav-btn">References</a>
+                <a href="#now" class="nav-btn primary">What's due</a>
+                <a href="#help" class="nav-btn">I need to...</a>
+                <a href="roadmap.html" class="nav-btn">Roadmap</a>
                 <a href="faq.html" class="nav-btn">FAQ</a>
             </nav>
         </div>
@@ -614,19 +240,140 @@
         <div class="bar-inner">
             <a href="#hero" class="bar-logo">Photography <span>101</span></a>
             <nav class="bar-links" aria-label="Sections">
-                <a href="#start">Start</a>
+                <a href="#now" class="hl">Right now</a>
+                <a href="#help">I need to...</a>
                 <a href="#assignments">Assignments</a>
                 <a href="#modules">Modules</a>
+                <a href="#contact">Contact</a>
+                <a href="#start">This semester</a>
                 <a href="#tools">Tools</a>
-                <a href="#work">Student Work</a>
-                <a href="#references">References</a>
+                <a href="#work">Student work</a>
                 <a href="faq.html">FAQ</a>
-                <a href="#rules">Rules</a>
             </nav>
         </div>
     </div>
 
     <main>
+        <section id="now" aria-labelledby="now-h">
+            <span class="label">Right now</span>
+            <h2 id="now-h">What's due</h2>
+            <div class="now-grid">
+                <div class="due-card" id="due-card"><span class="which">Loading</span></div>
+                <div class="side">
+                    <div class="mini week" id="week-card"></div>
+                    <div class="mini support" id="support-card"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="help" aria-labelledby="help-h">
+            <span class="label">Find it fast</span>
+            <h2 id="help-h">I need to...</h2>
+            <label class="search" for="q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="q" type="search" placeholder="Search: extension, borrow camera, template, Lightroom..." autocomplete="off"><button type="button" id="q-clear" hidden>Clear</button></label>
+            <div class="tasks" id="tasks">
+                <details class="task " data-keys="template canva layout a4 16:9 copy">
+                    <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>Get an assignment template<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+                    <div class="ans"><p>Each assignment has a Canva template in two layouts, 16:9 and A4. Open one, sign in to Canva, choose <b>File &gt; Make a copy</b>, and work in your copy.</p><div class="acts"><a class="btn" href="#assignments">All templates</a></div></div>
+                </details>
+                <details class="task " data-keys="submit submission pdf upload canvas hand in late missing file statement authorship">
+                    <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span>Submit my assignment<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+                    <div class="ans"><p>Export a web-friendly PDF (slide 2 of every template shows how) and submit it on Canvas by <b>18:00 Vietnam time</b> on the due date. Include your Statement of Authorship.</p><p>Forgot a file? Don't resubmit, that makes it late. Add the missing file as a comment on your existing submission.</p><div class="acts"><a class="btn" href="https://rmit.instructure.com/courses/174712/assignments/1289270" target="_blank" rel="noopener">Submit A1</a><a class="btn" href="https://rmit.instructure.com/courses/174712/assignments/1289273" target="_blank" rel="noopener">Submit A2</a><a class="btn" href="https://rmit.instructure.com/courses/174712/assignments/1289274" target="_blank" rel="noopener">Submit A3</a></div></div>
+                </details>
+                <details class="task t-sun" data-keys="extension extend deadline late sick special consideration more time">
+                    <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Ask for an extension<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+                    <div class="ans"><p>Fill in the <b>short-term extension application form</b> and email it to your lecturer <b>at least one working day before</b> the due date. Extensions are up to 7 calendar days.</p><p>Already late? Submit as soon as you can and email your lecturer with any proof. For serious circumstances, apply for Special Consideration.</p><div class="acts"><a class="btn" href="faq.html">Extensions in the FAQ</a></div></div>
+                </details>
+                <details class="task t-sky" data-keys="borrow camera loan equipment av room tripod sd card sony a6400 book sgs saigon south hanoi hn">
+                    <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>Borrow a camera or tripod<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+                    <div class="ans"><p><b>Saigon South (SGS):</b> book in person at the AV Room, Academic Building 1, Room 1.2.003 (Mon to Fri, 8:00 to 12:00 and 13:00 to 18:00). Bookings by email or online are not accepted. Kit you can borrow:</p><ul><li>Sony a6400 with 16-50mm kit lens</li><li>Sony SD card 64GB</li><li>Benro mini tripod</li><li>SD card reader</li></ul><p><b>Hanoi (HN):</b> gear is limited, so book ahead by email to <a href="mailto:avloans.rmitvn@rmit.edu.vn">avloans.rmitvn@rmit.edu.vn</a> with the subject <b>(HANOI) student equipment loan - [your s-number]</b>. Include your full name, s-number, course and assignment, the equipment you want, and your preferred pick-up time. Pick up at Tower A, 5th floor, Room 1.5.A412 (Mon to Fri, 8:30 to 12:00 and 13:30 to 17:00). Kit you can borrow:</p><ul><li>Canon 90D (body only)</li><li>Canon 70D with 18-55mm lens</li><li>Sigma 24-70mm f/2.8 DG lens for Canon</li><li>Sigma 18-35mm f/1.8 DC lens for Canon</li></ul><p>No lecturer approval needed. Loans are first come, first served, and the first check-out is up to 3 days (ask the AV team to extend). Bring your student ID when you pick up.</p></div>
+                </details>
+                <details class="task t-sky" data-keys="camera suitable phone manual raw dslr mirrorless which camera buy checker">
+                    <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span>Check if my camera works for the course<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+                    <div class="ans"><p>You need a camera with <b>Manual mode</b> and <b>RAW</b> files. The Camera Checker tells you if your model has both.</p><div class="acts"><a class="btn" href="camera-checker.html">Open Camera Checker</a></div></div>
+                </details>
+                <details class="task t-lilac" data-keys="lightroom adobe access licence license install login account edit editing raw export post-production student services">
+                    <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9v6h3M14 15V9h2a2 2 0 0 1 0 4h-2l3 2"/></svg></span>Get Lightroom (Adobe access)<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+                    <div class="ans"><p>Lightroom and Adobe access are handled by <b>Student Services</b>, not your lecturer. Email them at <a href="mailto:studentserviceandsupport@rmit.edu.au">studentserviceandsupport@rmit.edu.au</a> with your full name, s-number and a screenshot of the problem.</p><p>Learning to use Lightroom: Module 0 sets it up and Module 3 covers editing. Adobe's own tutorials help too.</p><div class="acts"><a class="btn" href="mailto:studentserviceandsupport@rmit.edu.au">Email Student Services</a><a class="btn" href="https://helpx.adobe.com/lightroom-classic/tutorials.html" target="_blank" rel="noopener">Lightroom tutorials</a></div></div>
+                </details>
+                <details class="task t-leaf" data-keys="support session help online miro consultation question stuck">
+                    <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11h-9l-5 4v-4H4z"/><path d="M10 9.5a2 2 0 1 1 2.5 1.9c-.4.1-.5.4-.5.8M12 14h0"/></svg></span>Get help in a support session<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+                    <div class="ans"><p>Online support sessions: <b>Wed Nov 4</b> (A1), <b>Wed Nov 25</b> (A2) and <b>Wed Dec 23</b> (A3). Guidance and HD examples are on the Miro board.</p><div class="acts"><a class="btn" href="https://au.miro.com/app/board/u3jVOf_GAsc=/?share_link_id=675895750787" target="_blank" rel="noopener">Support board (Miro)</a></div></div>
+                </details>
+                <details class="task t-leaf" data-keys="week roadmap plan schedule attendance videos timeline">
+                    <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span>See the week-by-week plan<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+                    <div class="ans"><p>Every week on one page: which module, which videos count for attendance, support sessions and due dates.</p><div class="acts"><a class="btn" href="roadmap.html">Open the roadmap</a></div></div>
+                </details>
+                <details class="task " data-keys="permission campus shoot form public filming">
+                    <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15 12 21 12 21z"/><circle cx="12" cy="10" r="2.5"/></svg></span>Shoot on campus<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+                    <div class="ans"><p>You need permission to photograph on campus. Carry the filming and photography form when shooting in public.</p></div>
+                </details>
+                <details class="task " data-keys="email lecturer contact bin message inbox question how to write academic services student services">
+                    <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="3"/><path d="m4.5 7 7.5 6 7.5-6"/></svg></span>Contact my lecturer<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+                    <div class="ans"><p>Email <b>bin.youn@rmit.edu.vn</b> from your RMIT student email. Please don't use the Canvas Inbox. See below for who to email for what, and a template you can copy.</p><div class="acts"><a class="btn" href="#contact">Who to email, and how</a></div></div>
+                </details>
+            </div>
+            <p class="nores" id="nores" hidden>Nothing here matches. Try the FAQ results below, or <a href="mailto:bin.youn@rmit.edu.vn">email your lecturer</a>.</p>
+            <div class="faq-hits" id="faq-hits"></div>
+        </section>
+
+        <section id="contact" aria-labelledby="contact-h">
+            <span class="label">Get an answer</span>
+            <h2 id="contact-h">Who to email, and how</h2>
+            <p class="lede">Check the <a href="#help">I need to...</a> list and the <a href="faq.html">FAQ</a> first: most answers are already there. If not, email the right team below <b>from your RMIT student email</b>. Please don't use the Canvas Inbox.</p>
+            <div class="contacts">
+                <div class="who">
+                    <span class="meta">Course, assignments, extensions, grades</span>
+                    <h3>Your lecturer, Bin Youn</h3>
+                    <div class="addr"><a href="mailto:bin.youn@rmit.edu.vn">bin.youn@rmit.edu.vn</a><button type="button" class="copy" data-copy="bin.youn@rmit.edu.vn">Copy</button></div>
+                </div>
+                <div class="who">
+                    <span class="meta">Lightroom and Adobe access</span>
+                    <h3>Student Services</h3>
+                    <div class="addr"><a href="mailto:studentserviceandsupport@rmit.edu.au">studentserviceandsupport@rmit.edu.au</a><button type="button" class="copy" data-copy="studentserviceandsupport@rmit.edu.au">Copy</button></div>
+                </div>
+                <div class="who">
+                    <span class="meta">Other academic matters</span>
+                    <h3>SCD Academic Services</h3>
+                    <div class="addr"><a href="mailto:scd.academic.services@rmit.edu.vn">scd.academic.services@rmit.edu.vn</a><button type="button" class="copy" data-copy="scd.academic.services@rmit.edu.vn">Copy</button></div>
+                </div>
+                <div class="who">
+                    <span class="meta">Borrowing cameras and tripods</span>
+                    <h3>AV team</h3>
+                    <p><b>SGS:</b> in person only, AV Room 1.2.003.<br><b>HN:</b> <a href="mailto:avloans.rmitvn@rmit.edu.vn">avloans.rmitvn@rmit.edu.vn</a>, subject "(HANOI) student equipment loan - [s-number]".</p>
+                </div>
+            </div>
+
+            <div class="howto">
+                <div class="howto-text">
+                    <h3>How to write your email</h3>
+                    <ul>
+                        <li><b>Subject:</b> course code, assignment, and your question in a few words.</li>
+                        <li><b>Say who you are:</b> full name, s-number and campus (SGS or HN).</li>
+                        <li><b>Be specific:</b> what you need, which assignment, and what you have already tried.</li>
+                        <li><b>Attach</b> screenshots, forms or proof if they help.</li>
+                        <li><b>One topic per email</b>, and reply in the same thread if you follow up.</li>
+                    </ul>
+                </div>
+                <div class="tpl">
+                    <div class="tpl-head"><span class="meta">Template you can copy</span><button type="button" class="copy" id="copy-tpl">Copy template</button></div>
+<pre id="email-tpl">To: bin.youn@rmit.edu.vn
+Subject: VART3626/VART3700 Photo 101, A1: [your question in a few words]
+
+Dear Bin,
+
+I am [full name], [s-number], studying at [SGS or HN] campus.
+
+[Your question. What you need, which assignment,
+and what you have already tried.]
+
+[Attachments, if any: screenshot, form, proof.]
+
+Thank you,
+[full name]</pre>
+                </div>
+            </div>
+        </section>
+
         <section id="start">
             <span class="label">Start here</span>
             <h2>This semester</h2>
@@ -668,6 +415,7 @@
                     <div class="links">
                         <a href="https://canva.link/9ny8ccegmn9ccqa" target="_blank" rel="noopener">Template 16:9</a>
                         <a href="https://canva.link/1t5v7ya23sfvo5y" target="_blank" rel="noopener">Template A4</a>
+                        <a class="sub" href="https://rmit.instructure.com/courses/174712/assignments/1289270" target="_blank" rel="noopener">Submit on Canvas</a>
                     </div>
                 </div>
                 <div class="card">
@@ -681,6 +429,7 @@
                     <div class="links">
                         <a href="https://canva.link/1z4qaogxe5k54w3" target="_blank" rel="noopener">Template 16:9</a>
                         <a href="https://canva.link/le1hc7ofyp45g05" target="_blank" rel="noopener">Template A4</a>
+                        <a class="sub" href="https://rmit.instructure.com/courses/174712/assignments/1289273" target="_blank" rel="noopener">Submit on Canvas</a>
                     </div>
                 </div>
                 <div class="card">
@@ -694,6 +443,7 @@
                     <div class="links">
                         <a href="https://canva.link/6uixzxmn0iou77k" target="_blank" rel="noopener">Template 16:9</a>
                         <a href="https://canva.link/uq79roivngmbe6s" target="_blank" rel="noopener">Template A4</a>
+                        <a class="sub" href="https://rmit.instructure.com/courses/174712/assignments/1289274" target="_blank" rel="noopener">Submit on Canvas</a>
                     </div>
                 </div>
             </div>
@@ -710,7 +460,7 @@
                     <span class="weeks">Week 1</span>
                     <div class="body">
                         <h3>Getting set up</h3>
-                        <p>Research consent form to unlock the modules, camera advice and settings, Lightroom setup, shooting RAW.</p>
+                        <p>Camera advice and settings, Lightroom setup, shooting RAW.</p>
                     </div>
                 </div>
                 <div class="module">
@@ -1074,6 +824,7 @@
         let pixelSize = 12;
         const hero = document.getElementById('hero');
         let heroVisible = true;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let lastWidth = window.innerWidth;
 
         new IntersectionObserver((entries) => {
@@ -1211,7 +962,12 @@
                 requestAnimationFrame(updatePixels);
                 return;
             }
-            time += 0.015;
+            // A light drifts across the title on its own (no cursor needed).
+            if (!reduceMotion) {
+                time += 0.015;
+                mouseX = hero.clientWidth * (0.5 + 0.36 * Math.sin(time * 0.9));
+                mouseY = hero.clientHeight * (0.4 + 0.22 * Math.sin(time * 1.7 + 1));
+            }
 
             for (let row = 0; row < pixelElements.length; row++) {
                 for (let col = 0; col < pixelElements[row].length; col++) {
@@ -1234,8 +990,8 @@
                     if (isText) {
                         // Text pixels - brighter and more colorful
                         const hue = (baseHue + intensity * 0.15) % 1;
-                        const saturation = 0.85 + intensity * 0.15;
-                        const lightness = 0.2 + intensity * 0.5;
+                        const saturation = 0.8 + intensity * 0.2;
+                        const lightness = 0.24 + intensity * 0.26;
                         const [r, g, b] = hslToRgb(hue, saturation, lightness);
 
                         if (intensity > 0.02) {
@@ -1244,24 +1000,25 @@
                                                       0 0 ${24 * intensity}px rgba(${r}, ${g}, ${b}, ${intensity * 0.4})`;
                         } else {
                             // Ambient glow for text
-                            const [ar, ag, ab] = hslToRgb(baseHue, 0.6, 0.18);
+                            // Resting title: dark, softly tinted ink on the light ground
+                            const [ar, ag, ab] = hslToRgb(baseHue, 0.35, 0.2);
                             pixel.style.backgroundColor = `rgb(${ar}, ${ag}, ${ab})`;
-                            pixel.style.boxShadow = `0 0 3px rgba(${ar}, ${ag}, ${ab}, 0.4)`;
+                            pixel.style.boxShadow = 'none';
                         }
                     } else {
                         // Background pixels - subtler effect
                         if (intensity > 0.05) {
                             const hue = (baseHue + intensity * 0.1) % 1;
-                            const saturation = 0.6 + intensity * 0.3;
-                            const lightness = 0.05 + intensity * 0.25;
+                            const saturation = 0.75;
+                            const lightness = 0.95 - intensity * 0.2;
                             const [r, g, b] = hslToRgb(hue, saturation, lightness);
 
                             pixel.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-                            pixel.style.boxShadow = `0 0 ${6 * intensity}px rgba(${r}, ${g}, ${b}, ${intensity * 0.5})`;
+                            pixel.style.boxShadow = 'none';
                         } else {
                             // Very subtle ambient for background
-                            const [ar, ag, ab] = hslToRgb(baseHue, 0.3, 0.03);
-                            pixel.style.backgroundColor = `rgb(${ar}, ${ag}, ${ab})`;
+                            // Empty cells stay see-through so the particles show
+                            pixel.style.backgroundColor = 'transparent';
                             pixel.style.boxShadow = 'none';
                         }
                     }
@@ -1270,33 +1027,6 @@
 
             requestAnimationFrame(updatePixels);
         }
-
-        function setPointer(x, y) {
-            const rect = hero.getBoundingClientRect();
-            mouseX = x - rect.left;
-            mouseY = y - rect.top;
-        }
-
-        document.addEventListener('mousemove', (e) => {
-            setPointer(e.clientX, e.clientY);
-        });
-
-        hero.addEventListener('touchmove', (e) => {
-            if (e.touches.length > 0) {
-                setPointer(e.touches[0].clientX, e.touches[0].clientY);
-            }
-        }, { passive: true });
-
-        hero.addEventListener('touchstart', (e) => {
-            if (e.touches.length > 0) {
-                setPointer(e.touches[0].clientX, e.touches[0].clientY);
-            }
-        }, { passive: true });
-
-        document.addEventListener('mouseleave', () => {
-            mouseX = -1000;
-            mouseY = -1000;
-        });
 
         let resizeTimeout;
         window.addEventListener('resize', () => {
@@ -1314,6 +1044,169 @@
         calculateGrid();
         createPixelGrid();
         updatePixels();
+
+        // ---------- floating pixel particles behind the title ----------
+        (() => {
+            const cv = document.getElementById('particles');
+            const ctx = cv.getContext('2d');
+            const COLORS = ['#ff8fa3', '#8cc8ff', '#ffd66b', '#8fdcb0', '#c7b2f5', '#ffb38a'];
+            let W = 0, H = 0, parts = [];
+            function size() {
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                W = hero.clientWidth; H = hero.clientHeight;
+                cv.width = W * dpr; cv.height = H * dpr;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                const n = Math.round(Math.min(80, Math.max(24, (W * H) / 10000)));
+                parts = Array.from({ length: n }, () => spawn(true));
+            }
+            function spawn(anywhere) {
+                const s = Math.max(5, pixelSize * (0.7 + Math.random() * 1.1));
+                return {
+                    x: Math.random() * W,
+                    y: anywhere ? Math.random() * H : H + s + Math.random() * 40,
+                    s, vy: 0.12 + Math.random() * 0.35,
+                    sway: 6 + Math.random() * 18, phase: Math.random() * Math.PI * 2,
+                    tw: 0.6 + Math.random() * 1.6,
+                    c: COLORS[(Math.random() * COLORS.length) | 0],
+                    a: 0.4 + Math.random() * 0.45,
+                };
+            }
+            let t = 0;
+            function frame() {
+                if (heroVisible || t === 0) {
+                    t += 0.016;
+                    ctx.clearRect(0, 0, W, H);
+                    for (let i = 0; i < parts.length; i++) {
+                        const p = parts[i];
+                        if (!reduceMotion) {
+                            p.y -= p.vy;
+                            if (p.y < -p.s - 10) parts[i] = spawn(false);
+                        }
+                        const x = p.x + Math.sin(t * 0.6 + p.phase) * p.sway;
+                        const fade = Math.min(1, p.y / (H * 0.25), (H - p.y + 20) / (H * 0.2));
+                        ctx.globalAlpha = Math.max(0, p.a * fade * (0.65 + 0.35 * Math.sin(t * p.tw + p.phase)));
+                        ctx.fillStyle = p.c;
+                        // snap to whole pixels so the squares stay crisp
+                        ctx.fillRect(Math.round(x), Math.round(p.y), Math.round(p.s), Math.round(p.s));
+                    }
+                    ctx.globalAlpha = 1;
+                }
+                if (!reduceMotion) requestAnimationFrame(frame);
+            }
+            size();
+            frame();
+            let rt;
+            window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(size, 200); });
+        })();
+
+    </script>
+
+    <script>
+    // ---------- Right now, search, highlights (Semester 3, 2026; update each semester) ----------
+    (() => {
+        const C = "https://rmit.instructure.com/courses/174712";
+        const TZ = "Asia/Ho_Chi_Minh";
+        const DUE = [
+            { id: "A1", name: "Photographic Techniques", due: "2026-11-13T18:00:00+07:00", what: "4 images with technical captions plus a 200-word reflection.", url: C + "/assignments/1289270", t169: "https://canva.link/9ny8ccegmn9ccqa", a4: "https://canva.link/1t5v7ya23sfvo5y" },
+            { id: "A2", name: "Photographic Craft and Visual Analysis", due: "2026-12-04T18:00:00+07:00", what: "16 images, 4 short reflections and a 400-word visual analysis.", url: C + "/assignments/1289273", t169: "https://canva.link/1z4qaogxe5k54w3", a4: "https://canva.link/le1hc7ofyp45g05" },
+            { id: "A3", name: "Final Folio", due: "2027-01-15T18:00:00+07:00", what: "20 to 30 connected images. Book your consultation in Week 8.", url: C + "/assignments/1289274", t169: "https://canva.link/6uixzxmn0iou77k", a4: "https://canva.link/uq79roivngmbe6s" },
+        ];
+        const WEEK1 = "2026-10-26";
+        const WEEKS = ["", "Module 0 + 1: get set up, the fundamentals", "Module 1: the exposure triangle", "Modules 2 + 3: composition, light, Lightroom", "Module 4: photographic genres", "Module 4: visual analysis", "Self-study: finish and submit A2", "Module 4 wrap-up and quiz", "Module 5: plan your project, book a consultation", "Module 5: shoot your folio", "Module 5: edit, select and sequence", "Module 5: finish your folio", "Hand in your folio"];
+        const MODULE_OF_WEEK = ["", "M1", "M1", "M2", "M4", "M4", "M4", "M4", "M5", "M5", "M5", "M5", "M5"];
+        const SUPPORT = [{ d: "2026-11-04", a: "A1" }, { d: "2026-11-25", a: "A2" }, { d: "2026-12-23", a: "A3" }];
+        const MIRO = "https://au.miro.com/app/board/u3jVOf_GAsc=/?share_link_id=675895750787";
+
+        const now = new Date();
+        const today = now.toLocaleDateString("en-CA", { timeZone: TZ });
+        const fmt = (iso, o) => new Date(iso).toLocaleString("en-GB", { timeZone: TZ, ...o });
+        const dayDiff = (a, b) => Math.round((Date.parse(a + "T12:00:00Z") - Date.parse(b + "T12:00:00Z")) / 86400000);
+
+        // Next due
+        const next = DUE.find((a) => Date.parse(a.due) > now.getTime());
+        const card = document.getElementById("due-card");
+        if (next) {
+            const ms = Date.parse(next.due) - now.getTime();
+            const d = Math.floor(ms / 86400000), h = Math.floor((ms % 86400000) / 3600000);
+            const left = d >= 1 ? `${d} day${d > 1 ? "s" : ""}${d < 3 ? ` ${h} h` : ""} left` : `${h} h left`;
+            card.innerHTML = `<span class="which">Next due · ${next.id}</span>
+                <h3>${next.name}</h3>
+                <div class="when"><b>${fmt(next.due, { weekday: "long", day: "numeric", month: "long" })}, 18:00</b> Vietnam time <span class="left ${d >= 7 ? "calm" : ""}">${left}</span></div>
+                <p class="what">${next.what}</p>
+                <div class="acts"><a class="btn primary" href="${next.url}" target="_blank" rel="noopener">Submit on Canvas</a><a class="btn" href="${next.t169}" target="_blank" rel="noopener">Template 16:9</a><a class="btn" href="${next.a4}" target="_blank" rel="noopener">Template A4</a><a class="btn" href="#help">Need an extension?</a></div>`;
+            const cards = document.querySelectorAll("#assignments .card");
+            const i = DUE.indexOf(next);
+            if (cards[i]) cards[i].classList.add("is-next");
+        } else {
+            card.innerHTML = `<span class="which">All done</span><h3>Every assignment is in</h3><p class="what">Well done this semester. Check Canvas for your feedback and grades.</p>`;
+        }
+
+        // Week
+        const wn = Math.floor(dayDiff(today, WEEK1) / 7) + 1;
+        const wk = document.getElementById("week-card");
+        if (wn >= 1 && wn <= 12) {
+            wk.innerHTML = `<span class="meta">This week</span><div class="big">Week ${wn}</div><p>${WEEKS[wn]}</p><a href="roadmap.html">Week-by-week roadmap →</a>`;
+            const m = MODULE_OF_WEEK[wn];
+            for (const el of document.querySelectorAll(".module")) if (el.querySelector(".num")?.textContent.trim() === m) el.classList.add("current");
+        } else {
+            wk.innerHTML = wn < 1 ? `<span class="meta">Semester</span><div class="big">Starts Oct 26</div><p>Start with Module 0 on Canvas.</p>` : `<span class="meta">Semester</span><div class="big">Finished</div><p>See you in the next course.</p>`;
+        }
+
+        // Support session
+        const sup = SUPPORT.find((x) => x.d >= today);
+        const sc = document.getElementById("support-card");
+        sc.innerHTML = sup
+            ? `<span class="meta">Next online support session</span><div class="big">${fmt(sup.d + "T12:00:00+07:00", { weekday: "short", day: "numeric", month: "short" })}</div><p>For ${sup.a}${sup.d === today ? ", today" : `, in ${dayDiff(sup.d, today)} day${dayDiff(sup.d, today) > 1 ? "s" : ""}`}.</p><a href="${MIRO}" target="_blank" rel="noopener">Support board (Miro) →</a>`
+            : `<span class="meta">Support sessions</span><div class="big">All done</div><p>Email your lecturer if you need help.</p>`;
+
+        // Search: filters the task cards and also searches the FAQ page
+        const q = document.getElementById("q");
+        const clear = document.getElementById("q-clear");
+        const tasks = [...document.querySelectorAll("#tasks .task")];
+        const hits = document.getElementById("faq-hits");
+        const nores = document.getElementById("nores");
+        let faq = [];
+        const faqReady = fetch("faq.html").then((r) => r.text()).then((html) => {
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            faq = [...doc.querySelectorAll(".faq-item")].map((el) => ({ q: el.querySelector(".faq-q")?.textContent.trim() ?? "", a: el.querySelector(".faq-a")?.textContent.trim() ?? "" })).filter((x) => x.q);
+        }).catch(() => {});
+        const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+        function run() {
+            // Match from the start of a word, so "late" finds "late" but not "template".
+            const words = q.value.toLowerCase().split(/\s+/).filter(Boolean).map((w) => new RegExp("(^|[^a-z0-9])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+            clear.hidden = !words.length;
+            let shown = 0;
+            for (const t of tasks) {
+                const hay = (t.textContent + " " + t.dataset.keys).toLowerCase();
+                const ok = !words.length || words.every((w) => w.test(hay));
+                t.hidden = !ok;
+                if (ok) shown++;
+                t.open = words.length > 0 && ok && shown <= 2;
+            }
+            const fh = words.length ? faq.filter((x) => words.every((w) => w.test((x.q + " " + x.a).toLowerCase()))).slice(0, 4) : [];
+            hits.innerHTML = fh.length ? `<span class="meta">From the FAQ</span>` + fh.map((x) => `<div class="hit"><b>${esc(x.q)}</b><span>${esc(x.a)}</span></div>`).join("") : "";
+            nores.hidden = !(words.length && !shown && !fh.length);
+        }
+        // Copy buttons in the contact section
+        for (const b of document.querySelectorAll("[data-copy], #copy-tpl")) {
+            b.addEventListener("click", async () => {
+                const text = b.id === "copy-tpl" ? document.getElementById("email-tpl").textContent : b.dataset.copy;
+                const label = b.textContent;
+                try { await navigator.clipboard.writeText(text); b.textContent = "Copied"; b.classList.add("done"); }
+                catch { b.textContent = "Select and copy"; }
+                setTimeout(() => { b.textContent = label; b.classList.remove("done"); }, 1800);
+            });
+        }
+        q.addEventListener("input", run);
+        clear.addEventListener("click", () => { q.value = ""; run(); q.focus(); });
+        // Links like photo101/?q=extension open the page with that search done.
+        const pre = new URLSearchParams(location.search).get("q");
+        if (pre) {
+            q.value = pre; run();
+            document.getElementById("help").scrollIntoView();
+            faqReady.then(run);
+        }
+    })();
     </script>
 </body>
 </html>
