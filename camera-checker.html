@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camera Suitability Checker | Photography 101 | RMIT University Vietnam</title>
   <link rel="icon" type="image/png" href="/photo101/favicon.png"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -62,7 +65,7 @@
 
         .checker-card {
             background: white;
-            border-radius: 8px;
+            border-radius: 18px;
             padding: 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             margin-bottom: 2rem;
@@ -180,7 +183,7 @@
 
         .requirements-card {
             background: white;
-            border-radius: 8px;
+            border-radius: 18px;
             padding: 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             margin-bottom: 2rem;
@@ -275,7 +278,7 @@
 
         .ask-card {
             background: white;
-            border-radius: 8px;
+            border-radius: 18px;
             padding: 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             margin-bottom: 2rem;
@@ -400,19 +403,29 @@
             color: #c40022;
             font-weight: 600;
         }
+
+        /* ---------- hub look (2026-11) ---------- */
+        body { font-family: "Source Sans 3", "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: #faf8f4; color: #1b1b1f; font-size: 17px; }
+        .topbar { position: sticky; top: 0; z-index: 20; background: rgba(250, 248, 244, .92); backdrop-filter: blur(10px); border-bottom: 1px solid #e8e3da; }
+        .topbar-inner { max-width: 900px; margin: 0 auto; padding: 10px 1.5rem; display: flex; align-items: center; gap: 18px; }
+        .topbar .logo { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-weight: 700; font-size: 1.3rem; text-transform: uppercase; text-decoration: none; color: #1b1b1f; white-space: nowrap; }
+        .topbar .logo span { color: #d80027; }
+        .topbar nav { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+        .topbar nav a { text-decoration: none; font-weight: 600; font-size: .92rem; color: #4f4e55; padding: 6px 11px; border-radius: 999px; white-space: nowrap; }
+        .topbar nav a:hover { background: #fff; color: #1b1b1f; }
+        @media (max-width: 640px) { .topbar .logo { display: none; } .topbar nav { margin-left: 0; } }
+        .course-title { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-size: clamp(2.2rem, 5vw, 2.8rem); text-transform: uppercase; line-height: 1.05; margin-top: 8px; }
+        .course-title span { color: #d80027; }
+        .course-subtitle { color: #46454c; font-size: 1.05rem; }
+        .checker-card { border-radius: 22px; box-shadow: 0 1px 2px rgba(30, 20, 10, .05), 0 8px 24px rgba(30, 20, 10, .06); }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <div class="rmit-logo">Photography101-Camera Checker</div>
-            <div class="department">School of Communication & Design</div>
-        </div>
-    </header>
+    <div class="topbar"><div class="topbar-inner"><a class="logo" href="/photo101/">Photography <span>101</span></a><nav aria-label="Photo 101"><a href="/photo101/">Hub</a><a href="/photo101/#now">What's due</a><a href="/photo101/#help">I need to...</a><a href="/photo101/faq.html">FAQ</a><a href="/photo101/#contact">Contact</a></nav></div></div>
 
     <main>
-        <h1 class="course-title">Photography 101</h1>
-        <p class="course-subtitle">Camera Suitability Checker</p>
+        <h1 class="course-title">Camera <span>Checker</span></h1>
+        <p class="course-subtitle">Does your camera have the manual controls and RAW files Photography 101 needs? Pick your brand and model to find out.</p>
 
         <div class="checker-card">
             <h2>Check Your Camera</h2>
